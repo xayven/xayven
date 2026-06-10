@@ -338,17 +338,20 @@
   const toggleText = document.getElementById('toggleText');
 
   let mode = 'login'; // 'login' | 'signup' | 'setup'
+  
   const SUPABASE_URL =
     'https://kbvlsftlzaqjbsaxspwi.supabase.co';
 
   const SUPABASE_ANON_KEY =
     'sb_publishable_OYo1TJfDB2AbUagiAFL_vg_5rIQzM21';
 
-  const supabaseClient =
+  window.supabaseClient =
     window.supabase.createClient(
       SUPABASE_URL,
       SUPABASE_ANON_KEY
     );
+  
+
   let signupAllowed = false;
 
   const rememberToggle = document.getElementById('rememberToggle');
@@ -385,7 +388,7 @@
   try {
   const {
     data: { session }
-  } = await supabaseClient.auth.getSession();
+  } = await window.supabaseClient.auth.getSession();
 
   if (session?.access_token) {
     const res = await fetch(
@@ -594,12 +597,12 @@ googleBtn.addEventListener('click', async () => {
     googleBtn.disabled = true;
 
     console.log("window.supabase =", window.supabase);
-    console.log("supabaseClient =", supabaseClient);
+    console.log("supabaseClient =", window.supabaseClient);
 
     alert("Calling OAuth");
 
     const { data, error } =
-      await supabaseClient.auth.signInWithOAuth({
+      await window.supabaseClient.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: window.location.origin + '/login'
