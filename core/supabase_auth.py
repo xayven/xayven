@@ -1,8 +1,9 @@
 import os
 import secrets
 import logging
-from typing import Optional, Dict, Any
+from typing import Dict, Any
 
+import requests
 from supabase import create_client, Client
 
 logger = logging.getLogger(__name__)
@@ -18,6 +19,9 @@ class SupabaseAuth:
 
         if not self.url:
             raise RuntimeError("SUPABASE_URL is not configured")
+
+        if not self.anon_key:
+            raise RuntimeError("SUPABASE_ANON_KEY is not configured")
 
         if not self.service_role_key:
             raise RuntimeError("SUPABASE_SERVICE_ROLE_KEY is not configured")
@@ -40,31 +44,9 @@ class SupabaseAuth:
 
         return username
 
-    def verify_access_token(self, access_token: str):
-        import requests
-    
-        try:
-            logger.info("TOKEN RECEIVED: %s", access_token[:50])
-    
-            response = requests.get(
-                f"{self.url}/auth/v1/user",
-                headers={
-                    "Authorization": f"Bearer {access_token}",
-                    "apikey": self.anon_key,
-                },
-            )
-    
-            logger.info("SUPABASE STATUS: %s", response.status_code)
-            logger.info("SUPABASE BODY: %s", response.text)
-    
-            response.raise_for_status()
-    
-            return response.json()
-    
-        except Exception as e:
-            logger.exception("SUPABASE TOKEN ERROR")
-            raise
-        import requests
+    def verify_access_token(self, access_token: str) -> Dict[str, Any]:
+        logger.error("VERIFY_ACCESS_TOKEN CALLED")
+        logger.error("TOKEN PREFIX: %s", access_token[:40])
 
         response = requests.get(
             f"{self.url}/auth/v1/user",
@@ -72,41 +54,20 @@ class SupabaseAuth:
                 "Authorization": f"Bearer {access_token}",
                 "apikey": self.anon_key,
             },
+            timeout=30,
         )
 
-        print("STATUS:", response.status_code)
-        print("BODY:", response.text)
+        logger.error("SUPABASE STATUS: %s", response.status_code)
+        logger.error("SUPABASE BODY: %s", response.text)
 
-        response.raise_for_status()
+        if response.status_code != 200:
+            raise ValueError(
+                f"Supabase rejected token. "
+                f"Status={response.status_code} "
+                f"Body={response.text}"
+            )
+
         return response.json()
-        try:
-            logger.info("TOKEN RECEIVED: %s", access_token[:50])
-
-            user = self.client.auth.get_user(access_token)
-
-            logger.info("USER RESULT: %s", user)
-
-            if not user or not user.user:
-                raise ValueError("Invalid Supabase token")
-
-            return user.user.model_dump()
-
-        except Exception as e:
-            logger.exception("SUPABASE ERROR")
-            logger.exception("Supabase token verification failed")
-            raise
-
-        try:
-            user = self.client.auth.get_user(access_token)
-
-            if not user or not user.user:
-                raise ValueError("Invalid Supabase token")
-
-            return user.user.model_dump()
-
-        except Exception as e:
-            logger.exception("Supabase token verification failed")
-            raise ValueError(f"Invalid token: {e}")
 
     def find_or_create_helix_user(self, user_data: Dict[str, Any]) -> str:
         email = (user_data.get("email") or "").strip().lower()
@@ -126,9 +87,7 @@ class SupabaseAuth:
             )
 
             if not created:
-                suffix = secrets.token_hex(2)
-
-                username = f"{username}_{suffix}"
+                username = f"{username}_{secrets.token_hex(2)}"
 
                 self.auth_manager.create_user(
                     username=username,
@@ -142,10 +101,13 @@ class SupabaseAuth:
             )
 
         return username
-    
-    
 
-    def login_with_google_token(self, access_token: str) -> Dict[str, Any]:
+    def login_with_google_token(
+        self,
+        access_token: str,
+    ) -> Dict[str, Any]:
+        logger.error("LOGIN_WITH_GOOGLE_TOKEN CALLED")
+
         user_data = self.verify_access_token(access_token)
 
         username = self.find_or_create_helix_user(user_data)
