@@ -42,7 +42,7 @@ class SupabaseAuth:
 
     def verify_access_token(self, access_token: str):
         import requests
-    
+
         response = requests.get(
             f"{self.url}/auth/v1/user",
             headers={
@@ -50,10 +50,10 @@ class SupabaseAuth:
                 "apikey": self.anon_key,
             },
         )
-    
+
         print("STATUS:", response.status_code)
         print("BODY:", response.text)
-    
+
         response.raise_for_status()
         return response.json()
         try:
@@ -119,6 +119,8 @@ class SupabaseAuth:
             )
 
         return username
+    
+    raise Exception("SUPABASE_AUTH_V2")
 
     def login_with_google_token(self, access_token: str) -> Dict[str, Any]:
         user_data = self.verify_access_token(access_token)
