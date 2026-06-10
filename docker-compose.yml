@@ -2,7 +2,7 @@ services:
   helix:
     build: .
     ports:
-      - "${APP_BIND:-127.0.0.1}:${APP_PORT:-7777}:7777"
+      - "7777:7000"
     volumes:
       - ./data:/app/data:z
       - ./logs:/app/logs:z
@@ -22,6 +22,7 @@ services:
       - "host.docker.internal:host-gateway"
     environment:
       - LLM_HOST=${LLM_HOST:-localhost}
+      - APP_BIND=0.0.0.0
       - LLM_HOSTS=${LLM_HOSTS:-}
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-}
