@@ -91,7 +91,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
                 "style-src 'self' 'unsafe-inline'; "
                 "font-src 'self'; "
                 "img-src 'self' data: blob: https:; "
-                "connect-src 'self'; "
+                "connect-src 'self' https://kbvlsftlzaqjbsaxspwi.supabase.co https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com; "
                 "frame-ancestors 'none'"
             )
         elif is_tool_render:
