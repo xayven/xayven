@@ -41,7 +41,7 @@ def _is_local(url: str) -> bool:
 @pytest.mark.parametrize("url", [
     "http://llamaswap:8000",            # bare Docker/Compose service name
     "http://nim-nano:8000/v1",
-    "http://localhost:7000",
+    "http://localhost:7777",
     "http://127.0.0.1:11434",
     "http://192.168.50.244",            # private ranges
     "http://10.0.0.5:8080",

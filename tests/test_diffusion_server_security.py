@@ -125,8 +125,8 @@ def test_compute_cors_origins_does_not_default_to_wildcard():
 
 def test_compute_cors_origins_honours_explicit_extras():
     ns = _load_helpers()
-    out = ns["_compute_cors_origins"](extras=["http://localhost:7000", "", "http://localhost:7000"])
-    assert out == ["http://localhost:7000"]
+    out = ns["_compute_cors_origins"](extras=["http://localhost:7777", "", "http://localhost:7777"])
+    assert out == ["http://localhost:7777"]
 
 
 def test_compute_cors_origins_preserves_explicit_wildcard():
@@ -134,8 +134,8 @@ def test_compute_cors_origins_preserves_explicit_wildcard():
     # who explicitly passes one is taken at their word (deduped, stripped,
     # stable order). This pins current behavior, not policy.
     ns = _load_helpers()
-    out = ns["_compute_cors_origins"](extras=["*", " http://localhost:7000 ", "*"])
-    assert out == ["*", "http://localhost:7000"]
+    out = ns["_compute_cors_origins"](extras=["*", " http://localhost:7777 ", "*"])
+    assert out == ["*", "http://localhost:7777"]
 
 
 # ── Live middleware integration: TrustedHostMiddleware + CORSMiddleware ─────
@@ -244,16 +244,16 @@ def test_explicit_cors_origin_does_not_widen_to_wildcard():
     """Even when the operator opts in to one cross-origin, that single origin
     must not unlock a wildcard reflection for other origins."""
     ns = _load_helpers()
-    cors_origins = ns["_compute_cors_origins"](extras=["http://localhost:7000"])
+    cors_origins = ns["_compute_cors_origins"](extras=["http://localhost:7777"])
 
     app = _configured_app(ns, cors_origins)
 
     # Allowed origin: ACAO echoes that origin (NOT '*').
     ok = _asgi_get(
-        app, "http://127.0.0.1/", headers={"Origin": "http://localhost:7000"}
+        app, "http://127.0.0.1/", headers={"Origin": "http://localhost:7777"}
     )
     assert ok.status_code == 200
-    assert ok.headers.get("access-control-allow-origin") == "http://localhost:7000"
+    assert ok.headers.get("access-control-allow-origin") == "http://localhost:7777"
     # Foreign origin: ACAO must NOT echo it, must NOT be '*'.
     bad = _asgi_get(
         app, "http://127.0.0.1/", headers={"Origin": "https://evil.example.com"}
@@ -273,7 +273,7 @@ def test_configure_security_middleware_preserves_order():
 
     ns = _load_helpers()
 
-    with_cors = _configured_app(ns, ns["_compute_cors_origins"](extras=["http://localhost:7000"]))
+    with_cors = _configured_app(ns, ns["_compute_cors_origins"](extras=["http://localhost:7777"]))
     assert [m.cls for m in with_cors.user_middleware] == [CORSMiddleware, TrustedHostMiddleware]
 
     default_deny = _configured_app(ns, [])
@@ -294,7 +294,7 @@ def test_configure_security_middleware_is_idempotent_before_serving():
     app = FastAPI()
     ns["_configure_security_middleware"](app, allowed, [])
     ns["_configure_security_middleware"](
-        app, allowed, ns["_compute_cors_origins"](extras=["http://localhost:7000"])
+        app, allowed, ns["_compute_cors_origins"](extras=["http://localhost:7777"])
     )
 
     classes = [m.cls for m in app.user_middleware]

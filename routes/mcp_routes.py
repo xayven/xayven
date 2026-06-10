@@ -22,7 +22,7 @@ router = APIRouter(prefix="/api/mcp", tags=["mcp"])
 
 
 def _mcp_oauth_base_dir() -> Path:
-    """Directory that may contain OAuth files managed by Odysseus."""
+    """Directory that may contain OAuth files managed by H E L I X."""
     return Path(MCP_OAUTH_DIR).resolve(strict=False)
 
 
@@ -447,7 +447,7 @@ def setup_mcp_routes(mcp_manager: McpManager):
 
             # For Desktop App creds, redirect to localhost — the user will
             # paste the resulting URL back if they're on a different device.
-            redirect_uri = "http://localhost:7000/api/mcp/oauth/callback"
+            redirect_uri = "http://localhost:7777/api/mcp/oauth/callback"
 
             params = {
                 "client_id": client_id,
@@ -482,7 +482,7 @@ def setup_mcp_routes(mcp_manager: McpManager):
         if resolve_pending(state, code):
             return HTMLResponse(_oauth_result_page(
                 "Authorization Successful",
-                "The MCP server is connecting. You can close this window and return to Odysseus.",
+                "The MCP server is connecting. You can close this window and return to H E L I X.",
                 success=True,
             ))
         # Legacy Google path: state is the server_id
@@ -508,7 +508,7 @@ def setup_mcp_routes(mcp_manager: McpManager):
         if state and resolve_pending(state, code):
             return HTMLResponse(_oauth_result_page(
                 "Authorization Successful",
-                "The MCP server is connecting. You can close this window and return to Odysseus.",
+                "The MCP server is connecting. You can close this window and return to H E L I X.",
                 success=True,
             ))
 
@@ -536,7 +536,7 @@ def setup_mcp_routes(mcp_manager: McpManager):
             client_id = keys["client_id"]
             client_secret = keys["client_secret"]
 
-            redirect_uri = "http://localhost:7000/api/mcp/oauth/callback"
+            redirect_uri = "http://localhost:7777/api/mcp/oauth/callback"
 
             async with httpx.AsyncClient() as client:
                 resp = await client.post(
@@ -612,7 +612,7 @@ def _oauth_authorize_page(auth_url: str, server_id: str, host: str) -> str:
     host = html.escape(host, quote=True)
     return f"""<!DOCTYPE html>
 <html><head>
-<meta charset="UTF-8"><title>Authorize — Odysseus</title>
+<meta charset="UTF-8"><title>Authorize — H E L I X</title>
 <style>
   body {{ font-family: 'Fira Code', monospace; background: #0f0f0f; color: #e0e0e0;
     display: flex; justify-content: center; align-items: center; min-height: 100vh; }}
@@ -654,7 +654,7 @@ def _oauth_authorize_page(auth_url: str, server_id: str, host: str) -> str:
   <div class="divider"></div>
   <form method="POST" action="http://{host}/api/mcp/oauth/exchange/{server_id}">
     <p>Paste the URL from your browser after signing in:</p>
-    <input type="text" name="callback_url" placeholder="http://localhost:7000/api/mcp/oauth/callback?code=..." required>
+    <input type="text" name="callback_url" placeholder="http://localhost:7777/api/mcp/oauth/callback?code=..." required>
     <br><button type="submit">Connect</button>
   </form>
 </div></body></html>"""

@@ -8,7 +8,7 @@ import core.constants as cc
 
 
 def _base(monkeypatch, **env):
-    for k in ("ODYSSEUS_INTERNAL_BASE", "APP_PORT"):
+    for k in ("HELIX_INTERNAL_BASE", "APP_PORT"):
         monkeypatch.delenv(k, raising=False)
     for k, v in env.items():
         monkeypatch.setenv(k, v)
@@ -16,17 +16,17 @@ def _base(monkeypatch, **env):
 
 
 def test_default_is_legacy_7000(monkeypatch):
-    assert _base(monkeypatch) == "http://127.0.0.1:7000"
+    assert _base(monkeypatch) == "http://127.0.0.1:7777"
 
 
 def test_app_port_is_honored(monkeypatch):
-    assert _base(monkeypatch, APP_PORT="7860") == "http://127.0.0.1:7860"
+    assert _base(monkeypatch, APP_PORT="7860") == "http://127.0.0.1:7778"
 
 
 def test_explicit_override_wins_and_is_stripped(monkeypatch):
     # Override beats APP_PORT and trailing slash is trimmed.
     assert _base(monkeypatch, APP_PORT="7860",
-                 ODYSSEUS_INTERNAL_BASE="https://proxy.example/") == "https://proxy.example"
+                 HELIX_INTERNAL_BASE="https://proxy.example/") == "https://proxy.example"
 
 
 def test_uses_127_not_localhost(monkeypatch):
@@ -49,4 +49,4 @@ def test_no_hardcoded_loopback_left_in_call_sites():
             stripped = ln.strip()
             if stripped.startswith("#"):
                 continue
-            assert "localhost:7000" not in ln, f"{rel}: hardcoded loopback URL: {ln.strip()}"
+            assert "localhost:7777" not in ln, f"{rel}: hardcoded loopback URL: {ln.strip()}"

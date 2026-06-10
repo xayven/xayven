@@ -130,7 +130,7 @@ def test_headers_openrouter_adds_attribution():
     assert h["Authorization"] == "Bearer secret"
     # OpenRouter ranks/labels apps via these headers.
     assert h["HTTP-Referer"].startswith("https://github.com/")
-    assert h["X-OpenRouter-Title"] == "Odysseus"
+    assert h["X-OpenRouter-Title"] == "H E L I X"
 
 
 def test_headers_omit_authorization_when_no_key():
@@ -209,7 +209,7 @@ class TestResolveUrlTailscale:
             er.socket, "getaddrinfo",
             lambda *a, **k: [(2, 1, 6, "", ("1.2.3.4", 0))],
         )
-        assert er.resolve_url("http://myhost:7000/api") == "http://myhost:7000/api"
+        assert er.resolve_url("http://myhost:7777/api") == "http://myhost:7777/api"
 
     def test_dns_failure_rewrites_to_tailscale_ip(self, monkeypatch):
         def _fail(*a, **k):
@@ -225,7 +225,7 @@ class TestResolveUrlTailscale:
             lambda *a, **k: types.SimpleNamespace(returncode=0, stdout=json.dumps(peers)),
         )
         # Port is preserved, host swapped for the Tailscale IP.
-        assert er.resolve_url("http://myhost:7000/api") == "http://100.64.0.5:7000/api"
+        assert er.resolve_url("http://myhost:7777/api") == "http://100.64.0.5:7777/api"
 
     def test_dns_failure_no_peer_match_keeps_url(self, monkeypatch):
         def _fail(*a, **k):
@@ -235,7 +235,7 @@ class TestResolveUrlTailscale:
             er.subprocess, "run",
             lambda *a, **k: types.SimpleNamespace(returncode=0, stdout=json.dumps({"Peer": {}})),
         )
-        assert er.resolve_url("http://myhost:7000/api") == "http://myhost:7000/api"
+        assert er.resolve_url("http://myhost:7777/api") == "http://myhost:7777/api"
 
     def test_url_without_hostname_is_returned_as_is(self):
         assert er.resolve_url("") == ""
