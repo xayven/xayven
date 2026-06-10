@@ -41,6 +41,21 @@ class SupabaseAuth:
         return username
 
     def verify_access_token(self, access_token: str):
+        import requests
+    
+        response = requests.get(
+            f"{self.url}/auth/v1/user",
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "apikey": self.anon_key,
+            },
+        )
+    
+        print("STATUS:", response.status_code)
+        print("BODY:", response.text)
+    
+        response.raise_for_status()
+        return response.json()
         try:
             logger.info("TOKEN RECEIVED: %s", access_token[:50])
 
