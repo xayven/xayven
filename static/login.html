@@ -246,6 +246,7 @@
   }
   @keyframes login-spin { to { transform: rotate(360deg); } }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 <main class="card">
@@ -285,6 +286,19 @@
     </div>
 
     <button type="submit" id="submitBtn">Sign In</button>
+    <button
+      type="button"
+      id="googleBtn"
+      style="
+        margin-top:10px;
+        background:#ffffff;
+        color:#000000;
+        border:1px solid #cccccc;
+      "
+    >
+    Continue with Google
+    </button>>
+  
   </form>
 
   <div class="toggle" id="toggleArea" style="display:none">
@@ -324,6 +338,17 @@
   const toggleText = document.getElementById('toggleText');
 
   let mode = 'login'; // 'login' | 'signup' | 'setup'
+  const SUPABASE_URL =
+    'https://kbvlsftlzaqjbsaxspwi.supabase.co';
+
+  const SUPABASE_ANON_KEY =
+    'sb_publishable_OYo1TJfDB2AbUagiAFL_vg_5rIQzM21';
+
+  const supabaseClient =
+    window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
   let signupAllowed = false;
 
   const rememberToggle = document.getElementById('rememberToggle');
@@ -356,6 +381,35 @@
       rememberToggle.style.display = '';
     }
   }
+
+  try {
+  const {
+    data: { session }
+  } = await supabaseClient.auth.getSession();
+
+  if (session?.access_token) {
+    const res = await fetch(
+      '/api/auth/google',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type':
+            'application/json'
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({
+          access_token:
+            session.access_token
+        })
+      }
+    );
+
+    if (res.ok) {
+      window.location.replace('/');
+      return;
+    }
+  }
+} catch (e) {}
 
   // Check auth status
   try {
@@ -530,6 +584,32 @@
   wireToggle('pwToggle', 'password');
   wireToggle('pwToggleConfirm', 'confirmPassword');
 })();
+
+const googleBtn = document.getElementById('googleBtn');
+
+googleBtn.addEventListener('click', async () => {
+  try {
+    googleBtn.disabled = true;
+
+    const { data, error } =
+      await supabaseClient.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo:
+            window.location.origin + '/login'
+        }
+      });
+
+    if (error) {
+      throw error;
+    }
+  } catch (err) {
+    errEl.textContent =
+      err.message || 'Google login failed';
+    errEl.style.display = 'block';
+    googleBtn.disabled = false;
+  }
+});
 
 // Prevent login button and eye toggles from stealing focus on mobile (keeps keyboard open)
 document.querySelectorAll('#submitBtn, .pw-toggle').forEach(btn => {
