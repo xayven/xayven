@@ -33,6 +33,73 @@ class SmartMockCollection:
 
     def get(self, ids: Optional[List[str]] = None, include: Optional[List[str]] = None, where: Optional[dict] = None, **kwargs) -> Dict[str, list]:
         store = _MOCK_STORAGE[self.name]
+        if ids:
+            found_ids = [i for i in ids if i in store["ids"]]
+            return {"ids": found_ids, "documents": [], "metadatas": []}
+        return {
+            "ids": store["ids"],
+            "documents": store["documents"],
+            "metadatas": store["metadatas"],
+            "embeddings": store["embeddings"]
+        }
+
+    def add(self, ids: List[str], documents: List[str], metadatas: List[dict], embeddings: Optional[List[list]] = None, **kwargs):
+        store = _MOCK_STORAGE[self.name]
+        for idx, row_id in enumerate(ids):
+            if row_id not in store["ids"]:
+                store["ids"].append(row_id)
+                store["documents"].append(documents[idx])
+                store["metadatas"].append(metadatas[idx] if idx < len(metadatas) else {})
+                if embeddings and idx < len(embeddings):
+                    store["embeddings"].append(embeddings[idx])
+                else:
+                    store["embeddings"].append([0.0] * 384)
+
+    def upsert(self, ids: List[str], documents: List[str], metadatas: List[dict], embeddings: Optional[List[list]] = None, **kwargs):
+        # First delete existing items to mimic upsert logic behavior cleanly
+        self.delete(ids)
+        self.add(ids, documents, metadatas, embeddings, **kwargs)
+
+    def delete(self, ids: List[str], **kwargs):
+        store = _MOCK_STORAGE[self.name]
+        for row_id in ids:
+            if row_id in store["ids"]:
+                idx = store["ids"].index(row_id)
+                store["ids"].pop(idx)
+                store["documents"].pop(idx)
+                store["metadatas"].pop(idx)
+                store["embeddings"].pop(idx)
+
+    def query(self, query_embeddings: List[List[float]], n_results: int, where: Optional[dict] = None, **kwargs) -> Dict[str, list]:
+        store = _MOCK_STORAGE[self.name]
+        target_ids, target_docs, target_metas, target_distances = [], [], [], []
+        limit = min(n_results, len(store["ids"]))
+        for i in range(limit):
+            if where and "owner" in where:
+                meta = store["metadatas"][i]
+                if meta.get("owner") != where["owner"]:
+                    continue
+            target_ids.append(store["ids"][i])
+            target_docs.append(store["documents"][i])
+            target_metas.append(store["metadatas"][i])
+            target_distances.append(0.1)
+        return {
+            "ids": [target_ids],
+            "documents": [target_docs],
+            "metadatas": [target_metas],
+            "distances": [target_distances]
+        }
+    
+    def __init__(self, name: str):
+        self.name = name
+        if name not in _MOCK_STORAGE:
+            _MOCK_STORAGE[name] = {"ids": [], "documents": [], "metadatas": [], "embeddings": []}
+
+    def count(self) -> int:
+        return len(_MOCK_STORAGE[self.name]["ids"])
+
+    def get(self, ids: Optional[List[str]] = None, include: Optional[List[str]] = None, where: Optional[dict] = None, **kwargs) -> Dict[str, list]:
+        store = _MOCK_STORAGE[self.name]
         
         # If explicit ID verify check request
         if ids:
