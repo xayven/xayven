@@ -177,6 +177,7 @@ if AUTH_ENABLED:
         "/api/auth/setup",
         "/api/auth/signup",
         "/api/auth/login",
+        "/api/auth/google",
         "/api/auth/logout",
         "/api/auth/status",
         "/api/auth/features",
