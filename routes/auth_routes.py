@@ -162,41 +162,40 @@ def setup_auth_routes(auth_manager: AuthManager) -> APIRouter:
         body: GoogleLoginRequest,
         response: Response,
         ):
-    try:
-        result = await asyncio.to_thread(
-            supabase_auth.login_with_google_token,
-            body.access_token,
-        )
+        try:
+            result = await asyncio.to_thread(
+                supabase_auth.login_with_google_token,
+                body.access_token,
+            )
 
-        token = result["session_token"]
+            token = result["session_token"]
 
-        cookie_kwargs = dict(
-            key=SESSION_COOKIE,
-            value=token,
-            httponly=True,
-            samesite="lax",
-            secure=os.getenv("SECURE_COOKIES", "false").lower() == "true",
-            path="/",
-        )
+            cookie_kwargs = dict(
+                key=SESSION_COOKIE,
+                value=token,
+                httponly=True,
+                samesite="lax",
+                secure=os.getenv("SECURE_COOKIES", "false").lower() == "true",
+                path="/",
+            )
 
-        if body.remember:
-            cookie_kwargs["max_age"] = 60 * 60 * 24 * 7
+            if body.remember:
+                cookie_kwargs["max_age"] = 60 * 60 * 24 * 7
 
-        response.set_cookie(**cookie_kwargs)
+            response.set_cookie(**cookie_kwargs)
 
-        return {
-            "ok": True,
-            "username": result["username"],
-            "email": result["email"],
-            "provider": "google",
-        }
-
-    except Exception as e:
-        logger.exception("Google login failed")
-        raise HTTPException(
-            status_code=401,
-            detail=f"Google authentication failed: {e}",
-        )
+            return {
+                "ok": True,
+                "username": result["username"],
+                "email": result["email"],
+                "provider": "google",
+            }
+        except Exception as e:
+            logger.exception("Google login failed")
+            raise HTTPException(
+                status_code=401,
+                detail=f"Google authentication failed: {e}",
+            )
 
     @router.post("/logout")
     async def logout(request: Request, response: Response):
