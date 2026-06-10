@@ -192,10 +192,10 @@ def setup_auth_routes(auth_manager: AuthManager) -> APIRouter:
             }
         except Exception as e:
             logger.exception("Google login failed")
-            raise HTTPException(
-                status_code=401,
-                detail=f"Google authentication failed: {e}",
-            )
+            return {
+                "error": str(e),
+                "type": str(type(e)),
+            }
 
     @router.post("/logout")
     async def logout(request: Request, response: Response):
