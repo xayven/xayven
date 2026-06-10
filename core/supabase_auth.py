@@ -40,7 +40,24 @@ class SupabaseAuth:
 
         return username
 
-    def verify_access_token(self, access_token: str) -> Dict[str, Any]:
+    def verify_access_token(self, access_token: str):
+        try:
+            print("TOKEN RECEIVED:", access_token[:50])
+    
+            user = self.client.auth.get_user(access_token)
+    
+            print("USER RESULT:", user)
+    
+            if not user or not user.user:
+                raise ValueError("Invalid Supabase token")
+    
+            return user.user.model_dump()
+    
+        except Exception as e:
+            print("SUPABASE ERROR:", repr(e))
+            logger.exception("Supabase token verification failed")
+            raise
+
         try:
             user = self.client.auth.get_user(access_token)
 
