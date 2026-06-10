@@ -589,27 +589,48 @@ const googleBtn = document.getElementById('googleBtn');
 
 googleBtn.addEventListener('click', async () => {
   try {
+    alert("Button clicked");
+
     googleBtn.disabled = true;
+
+    console.log("window.supabase =", window.supabase);
+    console.log("supabaseClient =", supabaseClient);
+
+    alert("Calling OAuth");
 
     const { data, error } =
       await supabaseClient.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo:
-            window.location.origin + '/login'
+          redirectTo: window.location.origin + '/login'
         }
       });
+
+    alert("OAuth returned");
+
+    console.log("OAuth data:", data);
+    console.log("OAuth error:", error);
 
     if (error) {
       throw error;
     }
+
   } catch (err) {
-    errEl.textContent =
-      err.message || 'Google login failed';
-    errEl.style.display = 'block';
+    console.error("Google login error:", err);
+
+    const errorBox = document.getElementById('error');
+
+    if (errorBox) {
+      errorBox.textContent =
+        err.message || 'Google login failed';
+      errorBox.style.display = 'block';
+    }
+
     googleBtn.disabled = false;
   }
 });
+
+
 
 // Prevent login button and eye toggles from stealing focus on mobile (keeps keyboard open)
 document.querySelectorAll('#submitBtn, .pw-toggle').forEach(btn => {
