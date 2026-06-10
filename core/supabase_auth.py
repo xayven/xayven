@@ -106,8 +106,7 @@ class SupabaseAuth:
         self,
         access_token: str,
     ) -> Dict[str, Any]:
-        logger.error("LOGIN_WITH_GOOGLE_TOKEN CALLED")
-
+        
         user_data = self.verify_access_token(access_token)
 
         username = self.find_or_create_helix_user(user_data)
