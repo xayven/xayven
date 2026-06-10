@@ -1,14 +1,11 @@
 """
 chroma_client.py
 
-Singleton ChromaDB Persistent client.
-Runs an embedded instance of ChromaDB locally inside the application layer
-to eliminate the need for an external server cluster (100% Free on Render).
+Singleton ChromaDB Ephemeral/In-Memory Client.
+Provides a local, zero-dependency data runtime inside the application layer.
 """
 
-import os
 import logging
-from src.constants import CHROMA_DIR
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +13,7 @@ _client = None
 
 
 def get_chroma_client():
-    """Get or create the singleton local ChromaDB Persistent client.
+    """Get or create the singleton local ChromaDB Ephemeral client.
 
     Raises RuntimeError with a clear install hint if the `chromadb` package
     is not installed.
@@ -34,14 +31,18 @@ def get_chroma_client():
         ) from e
 
     try:
-        # Instead of connecting to an external server via HttpClient, 
-        # we boot up a local database instance saved under your app's CHROMA_DIR.
-        client = chromadb.PersistentClient(path=CHROMA_DIR)
+        # We override the default configuration settings manually so the lightweight 
+        # http client library accepts running an isolated in-memory sequence.
+        from chromadb.config import Settings
         
-        # Verify health check
+        client = chromadb.Client(Settings(
+            chroma_api_impl="chromadb.api.segment.SegmentAPI",
+            is_persistent=False
+        ))
+        
         client.heartbeat()
         _client = client
-        logger.info(f"ChromaDB local persistent client successfully initialized at: {CHROMA_DIR}")
+        logger.info("ChromaDB local Ephemeral client successfully initialized.")
         return _client
         
     except Exception as e:
