@@ -42,6 +42,29 @@ class SupabaseAuth:
 
     def verify_access_token(self, access_token: str):
         import requests
+    
+        try:
+            logger.info("TOKEN RECEIVED: %s", access_token[:50])
+    
+            response = requests.get(
+                f"{self.url}/auth/v1/user",
+                headers={
+                    "Authorization": f"Bearer {access_token}",
+                    "apikey": self.anon_key,
+                },
+            )
+    
+            logger.info("SUPABASE STATUS: %s", response.status_code)
+            logger.info("SUPABASE BODY: %s", response.text)
+    
+            response.raise_for_status()
+    
+            return response.json()
+    
+        except Exception as e:
+            logger.exception("SUPABASE TOKEN ERROR")
+            raise
+        import requests
 
         response = requests.get(
             f"{self.url}/auth/v1/user",
@@ -120,7 +143,7 @@ class SupabaseAuth:
 
         return username
     
-    raise Exception("SUPABASE_AUTH_V2")
+    
 
     def login_with_google_token(self, access_token: str) -> Dict[str, Any]:
         user_data = self.verify_access_token(access_token)
