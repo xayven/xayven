@@ -2,6 +2,7 @@
 import mimetypes
 import os
 
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./odysseus.db")
 
 def register_static_mime_types() -> None:
     """Force stable JS module MIME types across platforms.
