@@ -1,166 +1,136 @@
 """
 embedding_lanes.py
 
-Engineered Mock Embedding Lanes.
-Directs system queries into an isolated local context vector matrix.
-Preserves fully operational chat memories and document processing for free.
+Supabase Permanent pgvector Connector Hub.
+Saves long-term AI memory and parsed documents straight into your Supabase database for 100% Free.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
-import hashlib
 import logging
-import os
+import json
 from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence
+from sqlalchemy import text
+from core.database import engine
 
 logger = logging.getLogger(__name__)
 
 LANE_FASTEMBED = "fastembed"
 LANE_CUSTOM = "custom"
 
-# Active process runtime state memory matrix
-_MOCK_STORAGE: Dict[str, Dict[str, list]] = {}
 
-class SmartMockCollection:
-    def __init__(self, name: str):
-        self.name = name
-        if name not in _MOCK_STORAGE:
-            _MOCK_STORAGE[name] = {"ids": [], "documents": [], "metadatas": [], "embeddings": []}
-
-    def count(self) -> int:
-        return len(_MOCK_STORAGE[self.name]["ids"])
-
-    def get(self, ids: Optional[List[str]] = None, include: Optional[List[str]] = None, where: Optional[dict] = None, **kwargs) -> Dict[str, list]:
-        store = _MOCK_STORAGE[self.name]
-        if ids:
-            found_ids = [i for i in ids if i in store["ids"]]
-            return {"ids": found_ids, "documents": [], "metadatas": []}
-        return {
-            "ids": store["ids"],
-            "documents": store["documents"],
-            "metadatas": store["metadatas"],
-            "embeddings": store["embeddings"]
-        }
-
-    def add(self, ids: List[str], documents: List[str], metadatas: List[dict], embeddings: Optional[List[list]] = None, **kwargs):
-        store = _MOCK_STORAGE[self.name]
-        for idx, row_id in enumerate(ids):
-            if row_id not in store["ids"]:
-                store["ids"].append(row_id)
-                store["documents"].append(documents[idx])
-                store["metadatas"].append(metadatas[idx] if idx < len(metadatas) else {})
-                if embeddings and idx < len(embeddings):
-                    store["embeddings"].append(embeddings[idx])
-                else:
-                    store["embeddings"].append([0.0] * 384)
-
-    def upsert(self, ids: List[str], documents: List[str], metadatas: List[dict], embeddings: Optional[List[list]] = None, **kwargs):
-        # First delete existing items to mimic upsert logic behavior cleanly
-        self.delete(ids)
-        self.add(ids, documents, metadatas, embeddings, **kwargs)
-
-    def delete(self, ids: List[str], **kwargs):
-        store = _MOCK_STORAGE[self.name]
-        for row_id in ids:
-            if row_id in store["ids"]:
-                idx = store["ids"].index(row_id)
-                store["ids"].pop(idx)
-                store["documents"].pop(idx)
-                store["metadatas"].pop(idx)
-                store["embeddings"].pop(idx)
-
-    def query(self, query_embeddings: List[List[float]], n_results: int, where: Optional[dict] = None, **kwargs) -> Dict[str, list]:
-        store = _MOCK_STORAGE[self.name]
-        target_ids, target_docs, target_metas, target_distances = [], [], [], []
-        limit = min(n_results, len(store["ids"]))
-        for i in range(limit):
-            if where and "owner" in where:
-                meta = store["metadatas"][i]
-                if meta.get("owner") != where["owner"]:
-                    continue
-            target_ids.append(store["ids"][i])
-            target_docs.append(store["documents"][i])
-            target_metas.append(store["metadatas"][i])
-            target_distances.append(0.1)
-        return {
-            "ids": [target_ids],
-            "documents": [target_docs],
-            "metadatas": [target_metas],
-            "distances": [target_distances]
-        }
+class SupabaseVectorCollection:
+    """Smart replacement that directly executes pgvector commands on Supabase."""
     
     def __init__(self, name: str):
         self.name = name
-        if name not in _MOCK_STORAGE:
-            _MOCK_STORAGE[name] = {"ids": [], "documents": [], "metadatas": [], "embeddings": []}
 
     def count(self) -> int:
-        return len(_MOCK_STORAGE[self.name]["ids"])
+        try:
+            with engine.connect() as conn:
+                res = conn.execute(
+                    text("SELECT COUNT(*) FROM helix_vectors WHERE collection_name = :name"),
+                    {"name": self.name}
+                ).scalar()
+                return int(res or 0)
+        except Exception as e:
+            logger.error(f"Failed to get vector count from Supabase: {e}")
+            return 0
 
-    def get(self, ids: Optional[List[str]] = None, include: Optional[List[str]] = None, where: Optional[dict] = None, **kwargs) -> Dict[str, list]:
-        store = _MOCK_STORAGE[self.name]
-        
-        # If explicit ID verify check request
-        if ids:
-            found_ids = [i for i in ids if i in store["ids"]]
-            return {"ids": found_ids, "documents": [], "metadatas": []}
-            
-        # Standard fallback search check
-        return {
-            "ids": store["ids"],
-            "documents": store["documents"],
-            "metadatas": store["metadatas"],
-            "embeddings": store["embeddings"]
-        }
+    def get(self, ids: Optional[List[str]] = None, **kwargs) -> Dict[str, list]:
+        try:
+            with engine.connect() as conn:
+                if ids:
+                    res = conn.execute(
+                        text("SELECT id FROM helix_vectors WHERE collection_name = :name AND id = ANY(:ids)"),
+                        {"name": self.name, "ids": ids}
+                    ).fetchall()
+                    return {"ids": [row[0] for row in res], "documents": [], "metadatas": []}
+                
+                res = conn.execute(
+                    text("SELECT id, document, metadata FROM helix_vectors WHERE collection_name = :name"),
+                    {"name": self.name}
+                ).fetchall()
+                
+                return {
+                    "ids": [r[0] for r in res],
+                    "documents": [r[1] for r in res],
+                    "metadatas": [json.loads(r[2]) if isinstance(r[2], str) else r[2] for r in res]
+                }
+        except Exception as e:
+            logger.error(f"Supabase vector get failed: {e}")
+            return {"ids": [], "documents": [], "metadatas": []}
 
     def add(self, ids: List[str], documents: List[str], metadatas: List[dict], embeddings: Optional[List[list]] = None, **kwargs):
-        store = _MOCK_STORAGE[self.name]
-        for idx, row_id in enumerate(ids):
-            if row_id not in store["ids"]:
-                store["ids"].append(row_id)
-                store["documents"].append(documents[idx])
-                store["metadatas"].append(metadatas[idx] if idx < len(metadatas) else {})
-                if embeddings and idx < len(embeddings):
-                    store["embeddings"].append(embeddings[idx])
-                else:
-                    store["embeddings"].append([0.0] * 384)
+        try:
+            with engine.begin() as conn:
+                for idx, row_id in enumerate(ids):
+                    emb = embeddings[idx] if embeddings else [0.0] * 384
+                    meta_json = json.dumps(metadatas[idx] if idx < len(metadatas) else {})
+                    
+                    conn.execute(
+                        text("""
+                            INSERT INTO helix_vectors (id, collection_name, document, metadata, embedding)
+                            VALUES (:id, :name, :doc, :meta, :emb)
+                            ON CONFLICT (id) DO UPDATE 
+                            SET document = EXCLUDED.document, metadata = EXCLUDED.metadata, embedding = EXCLUDED.embedding
+                        """),
+                        {
+                            "id": row_id,
+                            "name": self.name,
+                            "doc": documents[idx],
+                            "meta": meta_json,
+                            "emb": str(emb)
+                        }
+                    )
+        except Exception as e:
+            logger.error(f"Failed to write permanent vectors to Supabase: {e}")
+
+    def upsert(self, ids: List[str], documents: List[str], metadatas: List[dict], embeddings: Optional[List[list]] = None, **kwargs):
+        self.add(ids, documents, metadatas, embeddings, **kwargs)
 
     def delete(self, ids: List[str], **kwargs):
-        store = _MOCK_STORAGE[self.name]
-        for row_id in ids:
-            if row_id in store["ids"]:
-                idx = store["ids"].index(row_id)
-                store["ids"].pop(idx)
-                store["documents"].pop(idx)
-                store["metadatas"].pop(idx)
-                store["embeddings"].pop(idx)
+        try:
+            with engine.begin() as conn:
+                conn.execute(
+                    text("DELETE FROM helix_vectors WHERE collection_name = :name AND id = ANY(:ids)"),
+                    {"name": self.name, "ids": ids}
+                )
+        except Exception as e:
+            logger.error(f"Failed to delete items from Supabase vector storage: {e}")
 
     def query(self, query_embeddings: List[List[float]], n_results: int, where: Optional[dict] = None, **kwargs) -> Dict[str, list]:
-        store = _MOCK_STORAGE[self.name]
-        
-        # Basic keyword match router to prevent score failures
-        target_ids, target_docs, target_metas, target_distances = [], [], [], []
-        
-        limit = min(n_results, len(store["ids"]))
-        for i in range(limit):
-            # Apply basic owner query filtering logic if requested
-            if where and "owner" in where:
-                meta = store["metadatas"][i]
-                if meta.get("owner") != where["owner"]:
-                    continue
-                    
-            target_ids.append(store["ids"][i])
-            target_docs.append(store["documents"][i])
-            target_metas.append(store["metadatas"][i])
-            target_distances.append(0.1) # Simulate high cosine semantic match
+        try:
+            target_emb = query_embeddings[0] if query_embeddings else [0.0] * 384
+            owner_filter = where.get("owner") if where else None
+            
+            sql = """
+                SELECT id, document, metadata, (embedding <=> :emb) as distance 
+                FROM helix_vectors 
+                WHERE collection_name = :name
+            """
+            params = {"name": self.name, "emb": str(target_emb), "limit": n_results}
+            
+            if owner_filter:
+                sql += " AND (metadata->>'owner' = :owner)"
+                params["owner"] = str(owner_filter)
+                
+            sql += " ORDER BY embedding <=> :emb LIMIT :limit"
+            
+            with engine.connect() as conn:
+                res = conn.execute(text(sql), params).fetchall()
+                
+            return {
+                "ids": [[r[0] for r in res]],
+                "documents": [[r[1] for r in res]],
+                "metadatas": [[json.loads(r[2]) if isinstance(r[2], str) else r[2] for r in res]],
+                "distances": [[float(r[3] or 0.0) for r in res]]
+            }
+        except Exception as e:
+            logger.error(f"Supabase pgvector similarity execution failed: {e}")
+            return {"ids": [[]], "documents": [[]], "metadatas": [[]], "distances": [[]]}
 
-        return {
-            "ids": [target_ids],
-            "documents": [target_docs],
-            "metadatas": [target_metas],
-            "distances": [target_distances]
-        }
 
 @dataclass
 class EmbeddingLane:
@@ -178,6 +148,11 @@ class EmbeddingLane:
         return True
 
     def encode(self, texts: Sequence[str]) -> List[List[float]]:
+        from src.embeddings import get_embedding_client
+        client = get_embedding_client()
+        if client:
+            vecs = client.encode(list(texts), normalize_embeddings=True)
+            return vecs.tolist() if hasattr(vecs, "tolist") else [list(v) for v in vecs]
         return [[0.0] * self.dimension for _ in texts]
 
     def count(self) -> int:
@@ -203,17 +178,16 @@ def collection_name(base_name: str, lane_name: str) -> str:
     return f"{base_name}_{lane_name}"
 
 def build_embedding_lanes(base_name: str) -> List[EmbeddingLane]:
-    """Generates clean operational storage boundaries directly within memory."""
     return [
         EmbeddingLane(
             name=LANE_FASTEMBED,
             client=object(),
-            collection=SmartMockCollection(f"{base_name}_{LANE_FASTEMBED}"),
+            collection=SupabaseVectorCollection(f"{base_name}_{LANE_FASTEMBED}"),
             collection_name=f"{base_name}_{LANE_FASTEMBED}",
-            model="local-memory-fallback",
-            url="localhost",
+            model="supabase-pgvector",
+            url="supabase",
             dimension=384,
-            fingerprint="local_matrix_lane"
+            fingerprint="supabase_pgvector_production"
         )
     ]
 
@@ -247,10 +221,18 @@ def query_lanes(
     out: List[tuple[EmbeddingLane, Dict[str, Any]]] = []
     for lane in lanes:
         try:
+            from src.embeddings import get_embedding_client
+            client = get_embedding_client()
+            if not client:
+                continue
+            
+            raw_embeddings = client.encode([query])
+            query_embeddings = raw_embeddings.tolist() if hasattr(raw_embeddings, "tolist") else [list(v) for v in raw_embeddings]
+            
             n = n_results(lane)
-            results = lane.collection.query(query_embeddings=[[]], n_results=n, where=where)
+            results = lane.collection.query(query_embeddings=query_embeddings, n_results=n, where=where)
             if results["ids"][0]:
                 out.append((lane, results))
         except Exception as e:
-            logger.warning("Mock lane query failure abstraction: %s", e)
+            logger.warning("Supabase lane semantic lookup failure: %s", e)
     return out

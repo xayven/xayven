@@ -1554,6 +1554,81 @@ class Integration(TimestampMixin, Base):
 def _migrate_seed_email_account():
     """If email_accounts is empty and settings.json has legacy flat imap_host/smtp_host
     keys, create a single default account from them so nothing breaks for users who
+    upgraded."""
+    try:
+        with engine.connect() as conn:
+            # Check if table exists (PostgreSQL & SQLite compatible)
+            if "sqlite" in DATABASE_URL:
+                tables = [r[0] for r in conn.execute(text(
+                    "SELECT name FROM sqlite_master WHERE type='table' AND name='email_accounts'"
+                ))]
+                if "email_accounts" not in tables:
+                    return
+            else:
+                # For PostgreSQL/Supabase
+                check = conn.execute(text(
+                    "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'email_accounts')"
+                )).scalar()
+                if not check:
+                    return
+
+            existing = conn.execute(text("SELECT COUNT(*) FROM email_accounts")).scalar() or 0
+            if existing > 0:
+                return
+
+        import json as _json
+        import uuid as _uuid
+        from pathlib import Path
+        settings_file = Path(SETTINGS_FILE)
+        if not settings_file.exists():
+            return
+        try:
+            s = _json.loads(settings_file.read_text(encoding="utf-8"))
+        except Exception:
+            return
+
+        imap_host = (s.get("imap_host") or "").strip()
+        smtp_host = (s.get("smtp_host") or "").strip()
+        if not imap_host and not smtp_host:
+            return  # nothing to migrate
+
+        now = utcnow_naive()
+        with engine.begin() as conn:
+            conn.execute(text("""
+                INSERT INTO email_accounts
+                  (id, owner, name, is_default, enabled,
+                   imap_host, imap_port, imap_user, imap_password, imap_starttls,
+                   smtp_host, smtp_port, smtp_user, smtp_password,
+                   from_address, created_at, updated_at)
+                VALUES
+                  (:id, :owner, :name, :is_default, :enabled,
+                   :imap_host, :imap_port, :imap_user, :imap_password, :imap_starttls,
+                   :smtp_host, :smtp_port, :smtp_user, :smtp_password,
+                   :from_address, :created_at, :updated_at)
+            """), {
+                "id": _uuid.uuid4().hex,
+                "owner": None,
+                "name": "Default",
+                "is_default": True,
+                "enabled": True,
+                "imap_host": imap_host,
+                "imap_port": int(s.get("imap_port") or 993),
+                "imap_user": s.get("imap_user") or "",
+                "imap_password": s.get("imap_password") or "",
+                "imap_starttls": bool(s.get("imap_starttls", True)),
+                "smtp_host": smtp_host,
+                "smtp_port": int(s.get("smtp_port") or 465),
+                "smtp_user": s.get("smtp_user") or "",
+                "smtp_password": s.get("smtp_password") or "",
+                "from_address": s.get("email_from") or "",
+                "created_at": now,
+                "updated_at": now,
+            })
+            logging.getLogger(__name__).info("Seeded email_accounts 'Default' from settings.json")
+    except Exception as e:
+        logging.getLogger(__name__).warning(f"seed email account migration: {e}")
+    """If email_accounts is empty and settings.json has legacy flat imap_host/smtp_host
+    keys, create a single default account from them so nothing breaks for users who
     upgraded. Safe to run repeatedly — it short-circuits once any row exists."""
     try:
         with engine.connect() as conn:
@@ -1628,6 +1703,61 @@ def init_db():
     Initialize the database by creating all tables.
     Should be called when starting the application.
     """
+    # Simply create tables if we are on PostgreSQL/Supabase
+    if "sqlite" not in DATABASE_URL:
+        Base.metadata.create_all(bind=engine)
+        logger.info("Supabase database tables synchronized successfully.")
+        return
+
+    # Fallback to original SQLite logic only if running locally
+    _migrate_model_endpoints()
+    Base.metadata.create_all(bind=engine)
+    _migrate_add_hidden_models_column()
+    _migrate_add_cached_models_column()
+    _migrate_add_pinned_models_column()
+    _migrate_add_notes_sort_order()
+    _migrate_add_model_type_column()
+    _migrate_add_model_endpoint_refresh_columns()
+    _migrate_add_model_endpoint_owner_column()
+    _migrate_add_provider_auth_id_column()
+    _migrate_add_supports_tools_column()
+    _migrate_add_task_run_model_column()
+    _migrate_add_owner_column()
+    _migrate_add_document_archived_column()
+    _migrate_add_last_message_at_column()
+    _migrate_add_folder_column()
+    _migrate_add_token_columns()
+    _migrate_add_mode_column()
+    _migrate_add_multiuser_owner_columns()
+    _migrate_add_api_token_scopes_column()
+    _migrate_backfill_document_owner_from_session()
+    _migrate_assign_legacy_owner()
+    _migrate_add_tidy_verdict()
+    _migrate_add_doc_source_email_cols()
+    _migrate_add_oauth_config()
+    _migrate_add_task_automation_columns()
+    _migrate_add_disabled_tools()
+    _migrate_add_mcp_oauth_tokens_column()
+    _migrate_add_task_v2_columns()
+    _migrate_add_notifications_enabled()
+    _migrate_drop_ping_notes_tasks()
+    _migrate_add_crew_member_id()
+    _migrate_add_assistant_columns()
+    _migrate_add_email_smtp_security()
+    _migrate_seed_email_account()
+    _migrate_add_calendar_metadata()
+    _migrate_add_calendar_is_utc()
+    _migrate_add_calendar_origin()
+    _migrate_add_calendar_account_id()
+    _migrate_chat_messages_fts()
+    _migrate_encrypt_email_passwords()
+    _migrate_encrypt_signatures()
+    _migrate_encrypt_endpoint_keys()
+    _migrate_backfill_task_folders()
+    """
+    Initialize the database by creating all tables.
+    Should be called when starting the application.
+    """
     _migrate_model_endpoints()
     Base.metadata.create_all(bind=engine)
     _migrate_add_hidden_models_column()
@@ -1675,6 +1805,32 @@ def init_db():
 
 
 def _migrate_backfill_task_folders():
+    """Backfill folder='Tasks' on pre-existing task/research sessions."""
+    try:
+        with engine.connect() as conn:
+            if "sqlite" in DATABASE_URL:
+                cols = [r[1] for r in conn.execute(text("PRAGMA table_info(sessions)"))]
+                if "folder" not in cols:
+                    return
+            else:
+                # For PostgreSQL/Supabase
+                check = conn.execute(text(
+                    "SELECT EXISTS (SELECT FROM information_schema.columns WHERE table_name='sessions' AND column_name='folder')"
+                )).scalar()
+                if not check:
+                    return
+
+            res = conn.execute(text(
+                "UPDATE sessions SET folder = 'Tasks' "
+                "WHERE (folder IS NULL OR folder = '') "
+                "AND (name LIKE '[Task] %' OR name LIKE '[Research] %')"
+            ))
+            conn.commit()
+            if res.rowcount:
+                logging.getLogger(__name__).info(
+                    f"Backfilled folder='Tasks' on {res.rowcount} task/research sessions")
+    except Exception as e:
+        logging.getLogger(__name__).warning(f"task folder backfill: {e}")
     """Backfill folder='Tasks' on pre-existing task/research sessions.
 
     Sessions created by the task scheduler (LLM tasks, action tasks, research
