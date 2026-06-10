@@ -158,10 +158,10 @@ def setup_auth_routes(auth_manager: AuthManager) -> APIRouter:
         return {"ok": True, "username": username}
 
     @router.post("/google")
-async def google_login(
-    body: GoogleLoginRequest,
-    response: Response,
-):
+    async def google_login(
+        body: GoogleLoginRequest,
+        response: Response,
+        ):
     try:
         result = await asyncio.to_thread(
             supabase_auth.login_with_google_token,
