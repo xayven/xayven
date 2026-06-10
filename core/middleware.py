@@ -120,7 +120,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
                 "font-src 'self' https://cdn.jsdelivr.net; "
                 "img-src 'self' data: blob:; "
                 "media-src 'self' blob:; "
-                "connect-src 'self'; "
+                "connect-src 'self' https://kbvlsftlzaqjbsaxspwi.supabase.co https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com; "
                 "frame-src 'self'; "
                 "frame-ancestors 'none'"
             )
