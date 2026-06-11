@@ -592,14 +592,14 @@ const googleBtn = document.getElementById('googleBtn');
 
 googleBtn.addEventListener('click', async () => {
   try {
-    alert("Button clicked");
+    
 
     googleBtn.disabled = true;
 
     console.log("window.supabase =", window.supabase);
     console.log("supabaseClient =", window.supabaseClient);
 
-    alert("Calling OAuth");
+    
 
     const { data, error } =
       await window.supabaseClient.auth.signInWithOAuth({
@@ -609,7 +609,7 @@ googleBtn.addEventListener('click', async () => {
         }
       });
 
-    alert("OAuth returned");
+    
 
     console.log("OAuth data:", data);
     console.log("OAuth error:", error);
