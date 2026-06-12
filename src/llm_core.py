@@ -467,7 +467,11 @@ def _is_self_hosted_openai_compatible(url: str) -> bool:
     self-hosted servers generally ignore unknown fields and many (notably
     llama.cpp's server) use them for KV-cache slot affinity (issue #2927).
     """
-    return _detect_provider(url) == "openai" and not _host_match(url, "openai.com")
+    return (
+        _detect_provider(url) == "openai"
+        and not _host_match(url, "openai.com")
+        and not _host_match(url, "generativelanguage.googleapis.com")
+    )
 
 
 def _apply_local_cache_affinity(payload: Dict, url: str, session_id: Optional[str]) -> None:
