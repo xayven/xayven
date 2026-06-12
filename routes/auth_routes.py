@@ -181,6 +181,7 @@ def setup_auth_routes(auth_manager: AuthManager) -> APIRouter:
         body: GoogleLoginRequest,
         response: Response,
         ):
+        raise HTTPException(403, "Google login disabled")
         try:
             result = await asyncio.to_thread(
                 supabase_auth.login_with_google_token,
