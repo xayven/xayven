@@ -135,7 +135,10 @@ def setup_auth_routes(auth_manager: AuthManager) -> APIRouter:
         username = body.username.strip().lower()
         # Hardcoded admin login
         if username == "samayran" and body.password == "helixxconode":
-            token = "samayran-admin-session"
+            token = await asyncio.to_thread(
+                auth_manager.create_session_trusted,
+                username
+            )
 
             cookie_kwargs = dict(
                 key=SESSION_COOKIE,
