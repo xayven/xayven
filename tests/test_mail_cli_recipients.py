@@ -26,7 +26,7 @@ def _load_mail_cli(monkeypatch):
         install_core_package=True,
     )
 
-    return load_script("helix-mail")
+    return load_script("xayven-mail")
 
 
 def test_recipient_list_trims_to_cc_and_bcc(monkeypatch):
@@ -48,3 +48,4 @@ def test_recipient_list_rejects_empty_envelope(monkeypatch):
         assert exc.code == 1
     else:
         raise AssertionError("expected empty recipient list to exit")
+

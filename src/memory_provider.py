@@ -31,7 +31,7 @@ class MemorySearchHit:
 
 
 class MemoryProvider(ABC):
-    """Base contract for H E L I X memory providers.
+    """Base contract for Xayven memory providers.
 
     The native memory provider should always be available. External providers
     can add recall/write behavior and their own tools without replacing the
@@ -94,10 +94,10 @@ class MemoryProvider(ABC):
 
 
 class NativeMemoryProvider(MemoryProvider):
-    """Provider adapter for H E L I X' built-in memory manager and vector store."""
+    """Provider adapter for Xayven' built-in memory manager and vector store."""
 
     provider_id = "native"
-    display_name = "H E L I X native memory"
+    display_name = "Xayven native memory"
 
     _CORE_FIELDS = {
         "id",
@@ -318,3 +318,4 @@ class MemoryProviderRegistry:
             if isinstance(function_name, str) and function_name:
                 return function_name
         raise ValueError("Memory provider tool schema is missing a tool name")
+

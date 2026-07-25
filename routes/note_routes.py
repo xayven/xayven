@@ -359,11 +359,11 @@ async def dispatch_reminder(
                 msg["To"] = recipient
                 _t = title or 'Note'
                 _t = _t[len('Reminder:'):].strip() if _t.lower().startswith('reminder:') else _t
-                msg["Subject"] = f"Reminder (H E L I X): {_t}"
+                msg["Subject"] = f"Reminder (Xayven): {_t}"
                 msg["Date"] = _dt.utcnow().strftime("%a, %d %b %Y %H:%M:%S +0000")
-                msg["X-H E L I X-Origin"] = "helix-ui"
-                msg["X-H E L I X-Kind"] = "reminder"
-                msg["X-H E L I X-Ref"] = str(note_id)
+                msg["X-Xayven-Origin"] = "xayven-ui"
+                msg["X-Xayven-Kind"] = "reminder"
+                msg["X-Xayven-Ref"] = str(note_id)
                 # Body shape: synthesis (warm sentence) → blank line → bold
                 # title header → note details. The title was previously only
                 # in the subject line, so the email read like a faceless
@@ -883,3 +883,4 @@ def setup_note_routes(task_scheduler=None):
             db.close()
 
     return router
+

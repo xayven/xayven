@@ -18,10 +18,10 @@ let _cachedItems = []; // cached /api/models items for model-switch dropdown
 let _lastFetchTime = 0;
 let _fetchInflight = null;
 const _FETCH_CACHE_TTL = 30000; // 30s client-side cache for /api/models
-const COLLAPSE_KEY = 'helix-models-collapsed';
-const FAVORITES_KEY = 'helix-model-favorites';
-const USAGE_KEY = 'helix-model-usage';
-const SORT_KEY = 'helix-model-sort';
+const COLLAPSE_KEY = 'xayven-models-collapsed';
+const FAVORITES_KEY = 'xayven-model-favorites';
+const USAGE_KEY = 'xayven-model-usage';
+const SORT_KEY = 'xayven-model-sort';
 
 export function init(apiBase) {
   API_BASE = apiBase;
@@ -647,3 +647,4 @@ const modelsModule = {
 
 export default modelsModule;
 window.modelsModule = modelsModule;
+

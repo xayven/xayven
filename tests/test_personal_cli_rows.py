@@ -9,7 +9,7 @@ def _load_cli(monkeypatch):
     personal_docs = types.ModuleType("src.personal_docs")
     personal_docs.PersonalDocsManager = MagicMock()
     monkeypatch.setitem(sys.modules, "src.personal_docs", personal_docs)
-    return load_script("helix-personal")
+    return load_script("xayven-personal")
 
 
 def test_file_rows_skips_invalid_rows(monkeypatch):
@@ -20,3 +20,4 @@ def test_file_rows_skips_invalid_rows(monkeypatch):
         "bad-row",
         None,
     ]) == [{"name": "notes.txt", "path": "/tmp/notes.txt"}]
+

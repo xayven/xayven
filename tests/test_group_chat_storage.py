@@ -8,6 +8,7 @@ SOURCE = (
 
 def test_group_session_sidebar_cache_uses_safe_json_loader():
     assert "import Storage from './storage.js';" in SOURCE
-    assert "Storage.getJSON('helix-group-sessions', [])" in SOURCE
+    assert "Storage.getJSON('xayven-group-sessions', [])" in SOURCE
     assert "Array.isArray(storedGroupSessions)" in SOURCE
-    assert "JSON.parse(localStorage.getItem('helix-group-sessions')" not in SOURCE
+    assert "JSON.parse(localStorage.getItem('xayven-group-sessions')" not in SOURCE
+

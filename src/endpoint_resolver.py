@@ -213,8 +213,8 @@ def build_headers(api_key: Optional[str], base: str) -> Dict[str, str]:
     if api_key:
         headers["Authorization"] = f"Bearer {api_key}"
     if provider == "openrouter":
-        headers.setdefault("HTTP-Referer", "https://github.com/samayran-ik/helix-v3")
-        headers.setdefault("X-OpenRouter-Title", "H E L I X")
+        headers.setdefault("HTTP-Referer", "https://github.com/samayran-ik/xayven-v3")
+        headers.setdefault("X-OpenRouter-Title", "Xayven")
     return headers
 
 
@@ -405,3 +405,4 @@ def _resolve_fallback_candidates(setting_key: str, owner: Optional[str] = None) 
         if resolved:
             out.append(resolved)
     return out
+

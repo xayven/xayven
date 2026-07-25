@@ -5,7 +5,7 @@ single compose file and do not honor COMPOSE_FILE or multiple ``-f`` overlays,
 so the repo ships standalone ``docker-compose.gpu-*.yml`` files that inline the
 GPU overlay. The base ``docker-compose.yml`` plus ``docker/gpu.*.yml`` overlays
 remain the source of truth; these tests assert each standalone file equals the
-base compose with only the matching overlay merged into the ``helix``
+base compose with only the matching overlay merged into the ``xayven``
 service. No Docker / docker compose is required — everything is pure YAML.
 """
 
@@ -23,7 +23,7 @@ AMD_OVERLAY = ROOT / "docker" / "gpu.amd.yml"
 NVIDIA_STANDALONE = ROOT / "docker-compose.gpu-nvidia.yml"
 AMD_STANDALONE = ROOT / "docker-compose.gpu-amd.yml"
 
-SERVICE = "helix"
+SERVICE = "xayven"
 
 
 def _load(path: Path) -> dict:
@@ -52,7 +52,7 @@ def _deep_merge(base: dict, overlay: dict) -> dict:
 
 
 def _merge_overlay_into_base(base: dict, overlay: dict) -> dict:
-    """Build the expected standalone config: base + overlay on helix only."""
+    """Build the expected standalone config: base + overlay on xayven only."""
     expected = copy.deepcopy(base)
     overlay_service = overlay["services"][SERVICE]
     expected["services"][SERVICE] = _deep_merge(
@@ -81,11 +81,11 @@ def test_amd_standalone_equals_base_plus_overlay(base):
     assert standalone == _merge_overlay_into_base(base, overlay)
 
 
-# --- Non-helix services and volumes untouched ---------------------------
+# --- Non-xayven services and volumes untouched ---------------------------
 
 
 @pytest.mark.parametrize("standalone_path", [NVIDIA_STANDALONE, AMD_STANDALONE])
-def test_non_helix_services_match_base(base, standalone_path):
+def test_non_xayven_services_match_base(base, standalone_path):
     standalone = _load(standalone_path)
     for name, definition in base["services"].items():
         if name == SERVICE:
@@ -100,10 +100,10 @@ def test_top_level_volumes_match_base(base, standalone_path):
     assert standalone.get("volumes") == base.get("volumes")
 
 
-# --- helix = base service + only the overlay additions ------------------
+# --- xayven = base service + only the overlay additions ------------------
 
 
-def test_nvidia_helix_adds_only_overlay(base):
+def test_nvidia_xayven_adds_only_overlay(base):
     standalone = _load(NVIDIA_STANDALONE)
     svc = standalone["services"][SERVICE]
     base_svc = base["services"][SERVICE]
@@ -129,7 +129,7 @@ def test_nvidia_helix_adds_only_overlay(base):
     assert "group_add" not in svc
 
 
-def test_amd_helix_adds_only_overlay(base):
+def test_amd_xayven_adds_only_overlay(base):
     standalone = _load(AMD_STANDALONE)
     svc = standalone["services"][SERVICE]
     base_svc = base["services"][SERVICE]
@@ -145,3 +145,4 @@ def test_amd_helix_adds_only_overlay(base):
 
     # No NVIDIA-only keys leaked in.
     assert "deploy" not in svc
+

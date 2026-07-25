@@ -164,8 +164,8 @@ function _activateSpaceCard(card) {
 }
 
 function _initHoverCardSpaceToggle() {
-  if (document._helixHoverCardSpaceToggle) return;
-  document._helixHoverCardSpaceToggle = true;
+  if (document._xayvenHoverCardSpaceToggle) return;
+  document._xayvenHoverCardSpaceToggle = true;
   document.addEventListener('pointerover', (e) => {
     _lastPointerClientX = e.clientX;
     _lastPointerClientY = e.clientY;
@@ -1286,3 +1286,4 @@ if (!window._odyEscExpandGuard) {
     else { try { topModal.classList.add('hidden'); } catch {} }
   }, true);
 }
+

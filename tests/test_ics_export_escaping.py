@@ -29,7 +29,7 @@ def _export(cal_name, events):
     lines = [
         "BEGIN:VCALENDAR",
         "VERSION:2.0",
-        "PRODID:-//H E L I X//Calendar//EN",
+        "PRODID:-//Xayven//Calendar//EN",
         f"X-WR-CALNAME:{_ics_escape(cal_name)}",
     ]
     for ev in events:
@@ -104,3 +104,4 @@ class TestDtStartUtcFlag:
         ics = _export("Cal", [ev])
         assert "DTSTART;VALUE=DATE:20260602" in ics
         assert "Z" not in ics.split("DTSTART")[1].split("\r\n")[0]
+

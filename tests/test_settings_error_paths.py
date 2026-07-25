@@ -12,7 +12,7 @@ import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
-_TMP = Path(tempfile.mkdtemp(prefix="helix-settings-test-"))
+_TMP = Path(tempfile.mkdtemp(prefix="xayven-settings-test-"))
 os.environ.setdefault("DATA_DIR", str(_TMP))
 os.environ.setdefault("DATABASE_URL", f"sqlite:///{_TMP / 'app.db'}")
 
@@ -92,3 +92,4 @@ def test_valid_settings_merged_with_defaults(tmp_path):
     # Defaults still present for keys not in file.
     for key in s.DEFAULT_SETTINGS:
         assert key in result
+

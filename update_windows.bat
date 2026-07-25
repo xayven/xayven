@@ -1,11 +1,11 @@
 @echo off
 setlocal
-title Update H E L I X Docker Deployment
+title Update Xayven Docker Deployment
 
 pushd "%~dp0" >nul
 
 echo =========================================
-echo Updating H E L I X Docker deployment
+echo Updating Xayven Docker deployment
 echo =========================================
 echo.
 
@@ -57,3 +57,4 @@ echo Update failed. Check the message above and try again.
 :done
 popd >nul
 pause
+

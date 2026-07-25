@@ -69,7 +69,7 @@ def _request(tmp_path, session_manager=None):
         session_manager=session_manager,
     )
     return SimpleNamespace(
-        cookies={"helix_session": "t"},
+        cookies={"xayven_session": "t"},
         app=SimpleNamespace(state=state),
         state=SimpleNamespace(current_user="admin"),
     )
@@ -120,7 +120,7 @@ def test_rename_no_session_manager_does_not_crash(rename_endpoint):
     endpoint, _am, tmp_path = rename_endpoint
     # app.state without a session_manager must not raise.
     req = SimpleNamespace(
-        cookies={"helix_session": "t"},
+        cookies={"xayven_session": "t"},
         app=SimpleNamespace(state=SimpleNamespace(invalidate_token_cache=lambda: None)),
         state=SimpleNamespace(current_user="admin"),
     )
@@ -184,8 +184,8 @@ def test_rename_no_deep_research_dir_does_not_crash(rename_endpoint):
 
 
 def test_rename_research_respects_custom_data_dir(monkeypatch, tmp_path):
-    """DEEP_RESEARCH_DIR (which honours HELIX_DATA_DIR) is used, not a
-    hardcoded relative path. Before the fix, setting HELIX_DATA_DIR made
+    """DEEP_RESEARCH_DIR (which honours XAYVEN_DATA_DIR) is used, not a
+    hardcoded relative path. Before the fix, setting XAYVEN_DATA_DIR made
     the rename silently patch a different directory from where research files
     actually live, so reports still disappeared after rename."""
     import routes.auth_routes as ar
@@ -382,3 +382,4 @@ def test_rejected_rename_does_not_mutate_files(monkeypatch, tmp_path):
     assert json.loads(rp.read_text())["owner"] == "alice", "research owner mutated after rejected rename"
     assert json.loads(mem.read_text())[0]["owner"] == "alice", "memory owner mutated after rejected rename"
     assert "owner: alice" in (skill_dir / "SKILL.md").read_text(), "skill owner mutated after rejected rename"
+

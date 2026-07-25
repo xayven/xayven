@@ -391,7 +391,7 @@ def test_no_fetch_files_skips_progress(monkeypatch, capsys):
 def test_area_classification():
     audit = load_module()
 
-    areas = audit.classify_areas(["scripts/helix-mail", "tests/test_email.py"], "CalDAV sync")
+    areas = audit.classify_areas(["scripts/xayven-mail", "tests/test_email.py"], "CalDAV sync")
 
     assert "Email / CalDAV" in areas
     assert "Docs / tooling / tests" in areas
@@ -962,3 +962,4 @@ def test_help_includes_json_format_choice():
     assert "markdown" in help_text
     assert "terminal" in help_text
     assert "json" in help_text
+

@@ -13,7 +13,7 @@ def _load_signature_cli(monkeypatch):
     monkeypatch.setitem(sys.modules, "sqlalchemy", sqlalchemy_mod)
     monkeypatch.setitem(sys.modules, "core", core_mod)
     monkeypatch.setitem(sys.modules, "core.database", database_mod)
-    return load_script("helix-signature")
+    return load_script("xayven-signature")
 
 
 def test_decode_png_data_accepts_data_url(monkeypatch):
@@ -43,3 +43,4 @@ def test_decode_png_data_rejects_non_png_bytes(monkeypatch):
         assert exc.code == 1
     else:
         raise AssertionError("expected non-PNG bytes to exit")
+

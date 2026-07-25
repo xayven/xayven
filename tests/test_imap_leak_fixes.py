@@ -16,7 +16,7 @@ import tempfile
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-_TMP = Path(tempfile.mkdtemp(prefix="helix-imap-leak-fixes-"))
+_TMP = Path(tempfile.mkdtemp(prefix="xayven-imap-leak-fixes-"))
 os.environ.setdefault("DATA_DIR", str(_TMP))
 os.environ.setdefault("DATABASE_URL", f"sqlite:///{_TMP / 'app.db'}")
 
@@ -402,3 +402,4 @@ def test_mcp_smtp_connect_closes_on_starttls_failure(monkeypatch):
     assert raised, "starttls failure must propagate"
     assert captured.get("close_calls", 0) == 1, (
         f"close() must be called once on MCP SMTP STARTTLS failure. Got {captured.get('close_calls')}")
+

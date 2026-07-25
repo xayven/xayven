@@ -4,7 +4,7 @@ Providers like Moonshot (Kimi K2.5/K2.6) require reasoning_content on
 assistant tool-call messages. Stripping it causes HTTP 400 in multi-turn
 tool calling when thinking mode is enabled.
 
-See: https://github.com/samayran-ik/helix-v3/issues/3118
+See: https://github.com/samayran-ik/xayven-v3/issues/3118
 """
 import sys
 from unittest.mock import MagicMock
@@ -89,3 +89,4 @@ def test_sanitize_strips_unknown_fields_but_keeps_reasoning_content():
     assert "reasoning_content" in out[0], "reasoning_content was stripped"
     assert "some_custom_field" not in out[0], "custom field was not stripped"
     assert "another_meta" not in out[0], "custom field was not stripped"
+

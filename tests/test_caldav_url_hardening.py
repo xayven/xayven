@@ -40,16 +40,16 @@ def test_validate_caldav_url_rejects_unsafe_urls(url, message):
 
 
 def test_validate_caldav_url_blocks_private_ips_unless_explicitly_allowed(monkeypatch):
-    monkeypatch.delenv("HELIX_ALLOW_PRIVATE_CALDAV", raising=False)
+    monkeypatch.delenv("XAYVEN_ALLOW_PRIVATE_CALDAV", raising=False)
     with pytest.raises(ValueError, match="Private CalDAV IPs require"):
         caldav_sync.validate_caldav_url("http://10.0.0.5:5232/dav")
 
-    monkeypatch.setenv("HELIX_ALLOW_PRIVATE_CALDAV", "1")
+    monkeypatch.setenv("XAYVEN_ALLOW_PRIVATE_CALDAV", "1")
     assert caldav_sync.validate_caldav_url("http://10.0.0.5:5232/dav") == "http://10.0.0.5:5232/dav"
 
 
 def test_validate_caldav_url_blocks_dns_to_private(monkeypatch):
-    monkeypatch.delenv("HELIX_ALLOW_PRIVATE_CALDAV", raising=False)
+    monkeypatch.delenv("XAYVEN_ALLOW_PRIVATE_CALDAV", raising=False)
     monkeypatch.setattr(
         caldav_sync,
         "_resolve_caldav_host_ips",
@@ -61,7 +61,7 @@ def test_validate_caldav_url_blocks_dns_to_private(monkeypatch):
 
 
 def test_validate_caldav_url_blocks_dns_to_link_local_even_when_private_allowed(monkeypatch):
-    monkeypatch.setenv("HELIX_ALLOW_PRIVATE_CALDAV", "1")
+    monkeypatch.setenv("XAYVEN_ALLOW_PRIVATE_CALDAV", "1")
     monkeypatch.setattr(
         caldav_sync,
         "_resolve_caldav_host_ips",
@@ -104,7 +104,7 @@ def test_validate_caldav_url_blocks_mixed_dns_in_any_order(monkeypatch, addrs):
     # rejected regardless of record order — every resolved address is checked,
     # so one internal answer is enough to block. Defends DNS round-robin and a
     # rebind that slips an internal A-record alongside a public one.
-    monkeypatch.delenv("HELIX_ALLOW_PRIVATE_CALDAV", raising=False)
+    monkeypatch.delenv("XAYVEN_ALLOW_PRIVATE_CALDAV", raising=False)
     monkeypatch.setattr(
         caldav_sync,
         "_resolve_caldav_host_ips",
@@ -175,3 +175,4 @@ def test_calendar_routes_use_hardened_caldav_client_and_secret_storage():
     assert "pw = decrypt(pw)" in text
     assert "follow_redirects=False, trust_env=False" in text
     assert "Redirects are not followed for CalDAV safety" in text
+

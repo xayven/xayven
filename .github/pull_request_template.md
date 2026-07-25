@@ -24,7 +24,7 @@ Fixes #
 
 ## Checklist
 
-- [ ] I searched [open issues](https://github.com/samayran-ik/helix-v3/issues) and [open PRs](https://github.com/samayran-ik/helix-v3/pulls) — this is not a duplicate.
+- [ ] I searched [open issues](https://github.com/samayran-ik/xayven-v3/issues) and [open PRs](https://github.com/samayran-ik/xayven-v3/pulls) — this is not a duplicate.
 - [ ] This PR targets `dev`
 - [ ] My changes are limited to the scope described above — no unrelated refactors or whitespace changes mixed in.
 - [ ] I actually ran the app (`docker compose up` or `uvicorn app:app`) and verified the change works end-to-end. Type-checks and unit tests are not enough.
@@ -55,3 +55,4 @@ Fixes #
 ### Screenshots / clips
 
 <!-- Drag and drop images or a screen recording here. Required for any UI/visual change. -->
+

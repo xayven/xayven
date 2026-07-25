@@ -1,14 +1,14 @@
 #!/bin/bash
-# H E L I X — one-command quick start for macOS (Apple Silicon).
+# Xayven — one-command quick start for macOS (Apple Silicon).
 #
 #   ./start-macos.sh
 #
-# Installs everything H E L I X needs via Homebrew, sets up a local Python
+# Installs everything Xayven needs via Homebrew, sets up a local Python
 # environment, and launches the app — so a generic Mac user can run it without
 # knowing anything about venvs, pip, or uvicorn. Safe to re-run; it skips work
 # that's already done.
 #
-# Why native (not Docker): Cookbook serves models on whatever machine H E L I X
+# Why native (not Docker): Cookbook serves models on whatever machine Xayven
 # runs on, and Docker on macOS is a Linux VM with no access to the Metal GPU.
 # Running natively lets Cookbook detect and use your Mac's GPU.
 set -e
@@ -30,10 +30,10 @@ if [ -f .env ]; then
     done < .env
 fi
 
-# Shell overrides (HELIX_PORT / HELIX_HOST) take top priority, then .env
+# Shell overrides (XAYVEN_PORT / XAYVEN_HOST) take top priority, then .env
 # values (APP_PORT / APP_BIND), then built-in defaults.
-PORT="${HELIX_PORT:-${APP_PORT:-7860}}"   # 7860, not 7000 — macOS AirPlay Receiver holds 7000.
-HOST="${HELIX_HOST:-${APP_BIND:-127.0.0.1}}" # Set APP_BIND=0.0.0.0 in .env for LAN/Tailscale access.
+PORT="${XAYVEN_PORT:-${APP_PORT:-7860}}"   # 7860, not 7000 — macOS AirPlay Receiver holds 7000.
+HOST="${XAYVEN_HOST:-${APP_BIND:-127.0.0.1}}" # Set APP_BIND=0.0.0.0 in .env for LAN/Tailscale access.
 PROBE_HOST="$HOST"
 if [ "$PROBE_HOST" = "0.0.0.0" ] || [ "$PROBE_HOST" = "::" ]; then
     PROBE_HOST="127.0.0.1"
@@ -42,12 +42,12 @@ fi
 # Friendly message on any failure — re-running is safe (every step is idempotent).
 trap 'echo; echo "✗ Setup failed above. It is safe to re-run ./start-macos.sh."; exit 1' ERR
 
-echo "▶ H E L I X quick start for macOS"
+echo "▶ Xayven quick start for macOS"
 
 # Fail fast if the port is already taken (e.g. a previous run still running).
 if (exec 3<>"/dev/tcp/$PROBE_HOST/$PORT") 2>/dev/null; then
     echo "✗ Port $PORT is already in use on $PROBE_HOST. Stop what's using it, or pick another port:"
-    echo "    HELIX_PORT=7900 ./start-macos.sh"
+    echo "    XAYVEN_PORT=7900 ./start-macos.sh"
     exit 1
 fi
 
@@ -159,8 +159,8 @@ fi
 # 4. First-run setup: creates data dirs and prints an initial admin password
 #    the first time (idempotent — does nothing if already set up). Suppress its
 #    manual run hint — we launch the server ourselves just below.
-echo "▶ Preparing H E L I X…"
-HELIX_SKIP_RUN_HINT=1 ./venv/bin/python setup.py
+echo "▶ Preparing Xayven…"
+XAYVEN_SKIP_RUN_HINT=1 ./venv/bin/python setup.py
 
 # Local provider bootstrap.
 #     On Apple Silicon macOS, Apfel is treated as a sibling local model server
@@ -170,7 +170,7 @@ MACHINE_ARCH="$(uname -m)"
 APFEL_PID=""
 if [ "$MACHINE_ARCH" = "arm64" ]; then
     if command -v apfel >/dev/null 2>&1; then
-        APFEL_LOG="${TMPDIR:-/tmp}/helix-apfel.log"
+        APFEL_LOG="${TMPDIR:-/tmp}/xayven-apfel.log"
         echo "▶ Starting Apfel server in the background on port 11435…"
         echo "  logging to $APFEL_LOG"
         nohup apfel --serve --port 11435 >"$APFEL_LOG" 2>&1 &
@@ -202,7 +202,7 @@ if (exec 3<>"/dev/tcp/127.0.0.1/$CHROMA_PORT") 2>/dev/null; then
 elif [ -z "$CHROMA_BIND" ]; then
     echo "▶ CHROMADB_HOST=$CHROMA_HOST is remote - not starting a local ChromaDB."
 elif [ -x "$CHROMA_BIN" ]; then
-    CHROMA_LOG="${TMPDIR:-/tmp}/helix-chromadb.log"
+    CHROMA_LOG="${TMPDIR:-/tmp}/xayven-chromadb.log"
     echo "▶ Starting ChromaDB in the background on $CHROMA_BIND:$CHROMA_PORT…"
     echo "  logging to $CHROMA_LOG"
     nohup "$CHROMA_BIN" run --host "$CHROMA_BIND" --port "$CHROMA_PORT" --path "$PWD/data/chroma" >"$CHROMA_LOG" 2>&1 &
@@ -212,7 +212,7 @@ else
 fi
 
 # 5. Launch. Bind to loopback by default; opt into LAN/Tailscale with
-#    HELIX_HOST=0.0.0.0.
+#    XAYVEN_HOST=0.0.0.0.
 URL_HOST="$HOST"
 if [ "$URL_HOST" = "0.0.0.0" ] || [ "$URL_HOST" = "::" ]; then
     URL_HOST="127.0.0.1"
@@ -229,15 +229,15 @@ fi
 # Open the browser automatically once the server is accepting connections — so
 # the URL isn't lost in the startup logs that keep scrolling. Runs in the
 # background and is cleaned up when the server stops. Skip with
-# HELIX_NO_OPEN=1 (e.g. over SSH / headless).
+# XAYVEN_NO_OPEN=1 (e.g. over SSH / headless).
 POLLER_PID=""
-if [ -z "$HELIX_NO_OPEN" ] && command -v open >/dev/null 2>&1; then
+if [ -z "$XAYVEN_NO_OPEN" ] && command -v open >/dev/null 2>&1; then
     (
         for _ in $(seq 1 90); do
             if (exec 3<>"/dev/tcp/$PROBE_HOST/$PORT") 2>/dev/null; then
                 printf '\n'
                 printf '  ┌────────────────────────────────────────────┐\n'
-                printf '  │  ✓ H E L I X is ready — opening your browser  │\n'
+                printf '  │  ✓ Xayven is ready — opening your browser  │\n'
                 printf '  │     %-40s │\n' "$URL"
                 printf '  │     (Press Ctrl+C in this window to stop)    │\n'
                 printf '  └────────────────────────────────────────────┘\n\n'
@@ -256,10 +256,11 @@ trap - ERR
 trap '[ -n "$POLLER_PID" ] && kill "$POLLER_PID" 2>/dev/null; [ -n "$APFEL_PID" ] && kill "$APFEL_PID" 2>/dev/null; [ -n "$CHROMA_PID" ] && kill "$CHROMA_PID" 2>/dev/null' EXIT INT TERM
 
 echo
-echo "▶ Starting H E L I X — it will open in your browser at $URL"
+echo "▶ Starting Xayven — it will open in your browser at $URL"
 if [ -n "$TAILSCALE_URL" ]; then
     echo "  Tailscale/LAN URL: $TAILSCALE_URL"
 fi
 echo "  (this takes a few seconds; press Ctrl+C here to stop)"
 echo
 "$VENV_PY" -m uvicorn app:app --host "$HOST" --port "$PORT"
+

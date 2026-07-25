@@ -3,8 +3,8 @@
 
 // ── Key constants ──
 export const KEYS = {
-  THEME: 'helix-theme',
-  TOGGLES: 'helix-toggles',
+  THEME: 'xayven-theme',
+  TOGGLES: 'xayven-toggles',
   SIDEBAR_COLLAPSED: 'sidebar-collapsed',
   SIDEBAR_WIDTH: 'sidebar-width',
   SIDEBAR_SIDE: 'sidebar-side',
@@ -13,17 +13,17 @@ export const KEYS = {
   COMPARE_CHAT: 'compare-continue-chat',
   COMPARE_BLIND: 'compare-blind',
   COMPARE_RANDOM: 'compare-randomize',
-  MODELS_EXPANDED: 'helix-model-expanded',
-  MODEL_ENDPOINTS: 'helix-model-endpoints',
-  MODEL_SELECTED: 'helix-selected-model',
-  SORT_ORDER: 'helix-sessions-sort',
-  CHAT_SEARCH_SCOPE: 'helix-search-scope',
-  INCOGNITO: 'helix-incognito',
-  RAG_ACTIVE: 'helix-rag-active',
-  MCP_ACTIVE: 'helix-mcp-active',
+  MODELS_EXPANDED: 'xayven-model-expanded',
+  MODEL_ENDPOINTS: 'xayven-model-endpoints',
+  MODEL_SELECTED: 'xayven-selected-model',
+  SORT_ORDER: 'xayven-sessions-sort',
+  CHAT_SEARCH_SCOPE: 'xayven-search-scope',
+  INCOGNITO: 'xayven-incognito',
+  RAG_ACTIVE: 'xayven-rag-active',
+  MCP_ACTIVE: 'xayven-mcp-active',
   SECTION_ORDER: 'sidebar-section-order',
   ADMIN_LAST_TAB: 'admin-last-tab',
-  DENSITY: 'helix-density'
+  DENSITY: 'xayven-density'
 };
 
 /**
@@ -121,3 +121,4 @@ const Storage = {
 };
 
 export default Storage;
+

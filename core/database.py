@@ -1868,8 +1868,8 @@ def _migrate_chat_messages_fts():
     try:
         conn = sqlite3.connect(db_path)
         try:
-            conn.execute("CREATE VIRTUAL TABLE IF NOT EXISTS temp._helix_fts5_probe USING fts5(content)")
-            conn.execute("DROP TABLE IF EXISTS temp._helix_fts5_probe")
+            conn.execute("CREATE VIRTUAL TABLE IF NOT EXISTS temp._xayven_fts5_probe USING fts5(content)")
+            conn.execute("DROP TABLE IF EXISTS temp._xayven_fts5_probe")
         except Exception as e:
             logging.getLogger(__name__).warning(f"chat_messages FTS migration skipped; FTS5 unavailable: {e}")
             return
@@ -2294,3 +2294,4 @@ def archive_session(session_id: str):
 
 
 init_db()
+

@@ -365,10 +365,10 @@ def test_vllm_preflight_reports_cli_and_version():
     script = "\n".join(lines)
 
     assert 'export PATH="$HOME/.local/bin:$PATH"' in script
-    assert 'HELIX_VLLM_BIN="$(command -v vllm 2>/dev/null || true)"' in script
-    assert 'echo "[helix] vLLM CLI: $HELIX_VLLM_BIN"' in script
-    assert '"$HELIX_VLLM_BIN" --version' in script
-    assert 'HELIX_PREFLIGHT_EXIT=127' in script
+    assert 'XAYVEN_VLLM_BIN="$(command -v vllm 2>/dev/null || true)"' in script
+    assert 'echo "[xayven] vLLM CLI: $XAYVEN_VLLM_BIN"' in script
+    assert '"$XAYVEN_VLLM_BIN" --version' in script
+    assert 'XAYVEN_PREFLIGHT_EXIT=127' in script
 
 
 def test_venv_safe_local_pip_install_strips_user_flags_only_for_local_venv():
@@ -484,16 +484,16 @@ def test_serve_preflight_failure_keeps_tmux_pane_visible():
     capture the helpful error, leaving users with a blank "crashed" card.
     """
     runner_lines = [
-        'HELIX_PREFLIGHT_EXIT=""',
+        'XAYVEN_PREFLIGHT_EXIT=""',
         'echo "ERROR: vLLM is not installed. Open Cookbook -> Dependencies and install vllm on this server, then launch again."',
-        'HELIX_PREFLIGHT_EXIT=127',
+        'XAYVEN_PREFLIGHT_EXIT=127',
     ]
     _append_serve_preflight_exit_lines(runner_lines, keep_shell_open=True)
     script = "\n".join(runner_lines)
 
     assert "ERROR: vLLM is not installed" in script
-    assert 'HELIX_PREFLIGHT_EXIT=127' in script
-    assert 'echo "=== Process exited with code $HELIX_PREFLIGHT_EXIT ==="' in script
+    assert 'XAYVEN_PREFLIGHT_EXIT=127' in script
+    assert 'echo "=== Process exited with code $XAYVEN_PREFLIGHT_EXIT ==="' in script
     assert 'exec "${SHELL:-/bin/bash}"' in script
     assert "exit 127" not in script
 
@@ -504,8 +504,8 @@ def test_serve_runner_preserves_command_exit_code():
     _append_serve_exit_code_lines(runner_lines, keep_shell_open=True)
     script = "\n".join(runner_lines)
 
-    assert "HELIX_CMD_EXIT=$?" in script
-    assert 'echo "=== Process exited with code $HELIX_CMD_EXIT ==="' in script
+    assert "XAYVEN_CMD_EXIT=$?" in script
+    assert 'echo "=== Process exited with code $XAYVEN_CMD_EXIT ==="' in script
     assert 'echo "=== Process exited with code $? ==="' not in script
 
 
@@ -517,7 +517,7 @@ def test_pip_serve_runner_emits_download_ok_before_exit_marker():
 
     assert 'echo "DOWNLOAD_OK"' in script
     assert script.index('echo "DOWNLOAD_OK"') < script.index("=== Process exited with code")
-    assert 'exit "$HELIX_CMD_EXIT"' in script
+    assert 'exit "$XAYVEN_CMD_EXIT"' in script
 
 
 def test_validate_serve_cmd_accepts_vllm_kv_cache_dtype():
@@ -608,7 +608,7 @@ def test_llama_cpp_linux_bootstrap_checks_cudart_before_cuda_build():
     _append_llama_cpp_linux_accel_build_lines(runner_lines)
     script = "\n".join(runner_lines)
 
-    assert '_helix_has_cudart' in script
+    assert '_xayven_has_cudart' in script
     assert "grep -q 'libcudart\\.so'" in script
     # lib64 and lib variants for CUDA_HOME and /usr/local/cuda
     assert '$_cuh/lib64/libcudart.so' in script
@@ -618,7 +618,7 @@ def test_llama_cpp_linux_bootstrap_checks_cudart_before_cuda_build():
     # pip-installed nvidia runtime wheel sibling path
     assert 'cuda_runtime/lib/libcudart.so' in script
     # entire helper definition precedes the CUDA cmake invocation
-    assert script.index('_helix_has_cudart') < script.index('DGGML_CUDA=ON')
+    assert script.index('_xayven_has_cudart') < script.index('DGGML_CUDA=ON')
 
 
 def test_llama_cpp_linux_bootstrap_cuda_cmake_present_when_cudart_found():
@@ -824,3 +824,4 @@ def test_cached_model_scan_runs_additional_hf_cache(tmp_path):
     assert rec["size_bytes"] == len(b"abc123")
     assert rec["has_incomplete"] is False
     assert rec["is_diffusion"] is False
+

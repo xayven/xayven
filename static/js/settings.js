@@ -1660,8 +1660,8 @@ function initAppearance() {
   modalEl.querySelectorAll('[data-privacy-key]').forEach(function(chk) {
     chk.addEventListener('change', function() {
       if (chk.dataset.privacyKey !== 'sensitive-blur') return;
-      localStorage.setItem('helix-sensitive-blur', chk.checked ? 'on' : 'off');
-      window.dispatchEvent(new CustomEvent('helix-sensitive-blur-change', {
+      localStorage.setItem('xayven-sensitive-blur', chk.checked ? 'on' : 'off');
+      window.dispatchEvent(new CustomEvent('xayven-sensitive-blur-change', {
         detail: { enabled: chk.checked }
       }));
     });
@@ -1670,7 +1670,7 @@ function initAppearance() {
   var resetBtn = el('set-uiVisResetBtn');
   if (resetBtn) {
     resetBtn.addEventListener('click', function() {
-      localStorage.removeItem('helix-ui-visibility');
+      localStorage.removeItem('xayven-ui-visibility');
       syncAppearanceCheckboxes();
       syncPrivacyCheckboxes();
       window.applyUIVis({});
@@ -1689,7 +1689,7 @@ function syncAppearanceCheckboxes() {
 
 function syncPrivacyCheckboxes() {
   modalEl.querySelectorAll('[data-privacy-key="sensitive-blur"]').forEach(function(chk) {
-    chk.checked = localStorage.getItem('helix-sensitive-blur') === 'on';
+    chk.checked = localStorage.getItem('xayven-sensitive-blur') === 'on';
   });
 }
 
@@ -1979,7 +1979,7 @@ async function initShortcuts() {
         body: JSON.stringify({ keybinds }),
       });
       // Update global keybinds so they take effect immediately
-      window._helixKeybinds = keybinds;
+      window._xayvenKeybinds = keybinds;
       if (uiModule && uiModule.showToast) uiModule.showToast('Shortcut saved');
     } catch (e) {
       console.error('Failed to save keybinds:', e);
@@ -2158,12 +2158,12 @@ function initAccount() {
       // SECURITY: wipe all client-side state on logout so the next user that
       // signs in on this browser doesn't inherit the previous account's
       // session id, last-used model, draft chat input, or any cached lists.
-      // Keep "helix-last-user" so the login form remembers the username
+      // Keep "xayven-last-user" so the login form remembers the username
       // (if "Remember me" was on). Without this the chat composer pre-loaded
       // the previous user's last model into a fresh session, which read as
       // cross-account leakage.
       try {
-        const _keepKeys = new Set(['helix-last-user']);
+        const _keepKeys = new Set(['xayven-last-user']);
         const _toRemove = [];
         for (let i = 0; i < localStorage.length; i++) {
           const k = localStorage.key(i);
@@ -2207,7 +2207,7 @@ function initAll() {
 
 function notifyIntegrationsChanged() {
   try {
-    window.dispatchEvent(new CustomEvent('helix-integrations-changed'));
+    window.dispatchEvent(new CustomEvent('xayven-integrations-changed'));
   } catch (_) {}
 }
 
@@ -2435,7 +2435,7 @@ async function initReminderSettings() {
   // regardless of channel). The hint should make that clear so
   // users don't think they have to choose between channels.
   const CHANNEL_HINTS = {
-    browser: 'Reminders appear as browser notifications inside H E L I X.',
+    browser: 'Reminders appear as browser notifications inside Xayven.',
     email: 'Reminders are emailed AND shown as a browser notification.',
     ntfy: 'Reminders are pushed via ntfy AND shown as a browser notification.',
     webhook: 'Reminders are POSTed to the selected integration AND shown as a browser notification. Use {{title}} and {{message}} in the payload template.',
@@ -2444,7 +2444,7 @@ async function initReminderSettings() {
   applyReminderChannelAvailability();
   if (!channelSel.dataset.integrationRefreshWired) {
     channelSel.dataset.integrationRefreshWired = '1';
-    window.addEventListener('helix-integrations-changed', () => {
+    window.addEventListener('xayven-integrations-changed', () => {
       refreshReminderChannelAvailability().catch(e => console.warn('Failed to refresh reminder channels', e));
     });
   }
@@ -2775,7 +2775,7 @@ async function initEmailAccountsSettings() {
     const eafProviderNotes = {
       outlook: {
         title: 'Outlook / Office 365 needs OAuth',
-        body: 'Microsoft disables normal password login for IMAP/SMTP in most Outlook and Microsoft 365 accounts. H E L I X does not support Microsoft OAuth/Graph mail yet, so this preset is only a placeholder for future support.',
+        body: 'Microsoft disables normal password login for IMAP/SMTP in most Outlook and Microsoft 365 accounts. Xayven does not support Microsoft OAuth/Graph mail yet, so this preset is only a placeholder for future support.',
       },
     };
     const eafNoteEl = el('eaf-provider-note');
@@ -3261,12 +3261,12 @@ const AGENT_CONFIGS = {
     namePrefix: 'codex agent',
     defaultName: 'Codex Agent',
     pluginPath: '/api/codex/plugin.zip',
-    setupDescription: 'Downloads the plugin bundle and registers it with Codex. Sets <code>HELIX_URL</code> + <code>HELIX_API_TOKEN</code>, fetches the plugin from <a href="/api/codex/plugin.zip" style="color:var(--accent,var(--red));">this H E L I X instance</a>, and runs <code>codex plugin add helix@personal</code>.',
-    buildSetup: (origin, token) => `export HELIX_URL=${origin}
-export HELIX_API_TOKEN='${token}'
+    setupDescription: 'Downloads the plugin bundle and registers it with Codex. Sets <code>XAYVEN_URL</code> + <code>XAYVEN_API_TOKEN</code>, fetches the plugin from <a href="/api/codex/plugin.zip" style="color:var(--accent,var(--red));">this Xayven instance</a>, and runs <code>codex plugin add xayven@personal</code>.',
+    buildSetup: (origin, token) => `export XAYVEN_URL=${origin}
+export XAYVEN_API_TOKEN='${token}'
 mkdir -p ~/plugins
-curl -fsSL -H "Authorization: Bearer $HELIX_API_TOKEN" "$HELIX_URL/api/codex/plugin.zip" -o /tmp/helix-codex-plugin.zip
-python3 -m zipfile -e /tmp/helix-codex-plugin.zip ~/plugins
+curl -fsSL -H "Authorization: Bearer $XAYVEN_API_TOKEN" "$XAYVEN_URL/api/codex/plugin.zip" -o /tmp/xayven-codex-plugin.zip
+python3 -m zipfile -e /tmp/xayven-codex-plugin.zip ~/plugins
 python3 - <<'PY'
 import json
 from pathlib import Path
@@ -3282,16 +3282,16 @@ data.setdefault("name", "personal")
 data.setdefault("interface", {}).setdefault("displayName", "Personal")
 plugins = data.setdefault("plugins", [])
 entry = {
-    "name": "helix",
-    "source": {"source": "local", "path": "./plugins/helix"},
+    "name": "xayven",
+    "source": {"source": "local", "path": "./plugins/xayven"},
     "policy": {"installation": "AVAILABLE", "authentication": "ON_INSTALL"},
     "category": "Productivity",
 }
-data["plugins"] = [item for item in plugins if item.get("name") != "helix"] + [entry]
+data["plugins"] = [item for item in plugins if item.get("name") != "xayven"] + [entry]
 p.write_text(json.dumps(data, indent=2) + "\\n")
 PY
-codex plugin add helix@personal
-python3 ~/plugins/helix/scripts/helix_api.py capabilities`,
+codex plugin add xayven@personal
+python3 ~/plugins/xayven/scripts/xayven_api.py capabilities`,
   },
   claude: {
     label: 'Claude Agent',
@@ -3299,13 +3299,13 @@ python3 ~/plugins/helix/scripts/helix_api.py capabilities`,
     namePrefix: 'claude agent',
     defaultName: 'Claude Agent',
     pluginPath: '/api/claude/plugin.zip',
-    setupDescription: 'Downloads the skill bundle into <code>~/.claude/skills/helix/</code>. Sets <code>HELIX_URL</code> + <code>HELIX_API_TOKEN</code>, fetches the skill from <a href="/api/claude/plugin.zip" style="color:var(--accent,var(--red));">this H E L I X instance</a>. Claude Code auto-loads the skill on next start.',
-    buildSetup: (origin, token) => `export HELIX_URL=${origin}
-export HELIX_API_TOKEN='${token}'
+    setupDescription: 'Downloads the skill bundle into <code>~/.claude/skills/xayven/</code>. Sets <code>XAYVEN_URL</code> + <code>XAYVEN_API_TOKEN</code>, fetches the skill from <a href="/api/claude/plugin.zip" style="color:var(--accent,var(--red));">this Xayven instance</a>. Claude Code auto-loads the skill on next start.',
+    buildSetup: (origin, token) => `export XAYVEN_URL=${origin}
+export XAYVEN_API_TOKEN='${token}'
 mkdir -p ~/.claude
-curl -fsSL -H "Authorization: Bearer $HELIX_API_TOKEN" "$HELIX_URL/api/claude/plugin.zip" -o /tmp/helix-claude-skill.zip
-python3 -m zipfile -e /tmp/helix-claude-skill.zip ~/.claude/
-python3 ~/.claude/skills/helix/scripts/helix_api.py capabilities`,
+curl -fsSL -H "Authorization: Bearer $XAYVEN_API_TOKEN" "$XAYVEN_URL/api/claude/plugin.zip" -o /tmp/xayven-claude-skill.zip
+python3 -m zipfile -e /tmp/xayven-claude-skill.zip ~/.claude/
+python3 ~/.claude/skills/xayven/scripts/xayven_api.py capabilities`,
   },
 };
 
@@ -3620,7 +3620,7 @@ async function initUnifiedIntegrations() {
       if (ntfyHint) {
         ntfyHint.style.display = isNtfy ? 'block' : 'none';
         if (isNtfy) {
-          ntfyHint.innerHTML = 'Enter the ntfy server URL H E L I X can reach. Examples: <code>http://127.0.0.1:8091</code>, <code>http://100.x.y.z:8091</code>, or <code>https://ntfy.example.com</code>.';
+          ntfyHint.innerHTML = 'Enter the ntfy server URL Xayven can reach. Examples: <code>http://127.0.0.1:8091</code>, <code>http://100.x.y.z:8091</code>, or <code>https://ntfy.example.com</code>.';
         }
       }
       if (url) {
@@ -3876,7 +3876,7 @@ async function initUnifiedIntegrations() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = format === 'csv' ? 'helix-contacts.csv' : 'helix-contacts.vcf';
+        a.download = format === 'csv' ? 'xayven-contacts.csv' : 'xayven-contacts.vcf';
         document.body.appendChild(a);
         a.click();
         a.remove();
@@ -4154,7 +4154,7 @@ async function initUnifiedIntegrations() {
       },
       outlook: {
         title: 'Outlook / Office 365 needs OAuth',
-        body: 'Microsoft disables normal password login for IMAP/SMTP in most Outlook and Microsoft 365 accounts. H E L I X does not support Microsoft OAuth/Graph mail yet, so this preset is only a placeholder for future support.',
+        body: 'Microsoft disables normal password login for IMAP/SMTP in most Outlook and Microsoft 365 accounts. Xayven does not support Microsoft OAuth/Graph mail yet, so this preset is only a placeholder for future support.',
         url: 'https://learn.microsoft.com/exchange/clients-and-mobile-in-exchange-online/disable-basic-authentication-in-exchange-online',
         linkLabel: 'Read Microsoft note',
       },
@@ -4895,7 +4895,7 @@ async function initUnifiedIntegrations() {
     formEl.innerHTML = `
       <div class="admin-card" style="margin-top:8px">
         <h2 style="font-size:13px">${esc(cfg.label)}</h2>
-        <div style="font-size:11px;opacity:0.65;line-height:1.45;margin:-2px 0 8px;">Generates a scoped token + setup commands so ${esc(cfg.word)} on your own machine can read/write your H E L I X data (todos, email, calendar, etc.). The agent runs in your terminal — it isn't streamed inside H E L I X.</div>
+        <div style="font-size:11px;opacity:0.65;line-height:1.45;margin:-2px 0 8px;">Generates a scoped token + setup commands so ${esc(cfg.word)} on your own machine can read/write your Xayven data (todos, email, calendar, etc.). The agent runs in your terminal — it isn't streamed inside Xayven.</div>
         <div class="settings-col">
           <div id="uf-codex-pending" style="display:${current ? 'none' : 'block'};font-size:11px;opacity:0.6;padding:6px 0;">Creating agent...</div>
           <div id="uf-codex-reveal" style="display:none;padding:10px 12px;border:1px solid var(--border);border-left:3px solid var(--accent, var(--red));border-radius:6px;background:rgba(0,0,0,0.04);width:100%;box-sizing:border-box;">
@@ -4915,7 +4915,7 @@ async function initUnifiedIntegrations() {
             </div>
 
             <div style="margin-top:14px;font-weight:600;font-size:11px;margin-bottom:4px;">Configure access</div>
-            <div style="font-size:11px;opacity:0.62;margin-bottom:6px;">Toggle which H E L I X tools this agent can use. New agents start with chat only.</div>
+            <div style="font-size:11px;opacity:0.62;margin-bottom:6px;">Toggle which Xayven tools this agent can use. New agents start with chat only.</div>
             <div id="uf-codex-inline-scopes"></div>
           </div>
           <div style="font-size:11px;font-weight:600;opacity:0.62;margin-top:10px;">${agentTokens.length ? 'Existing agents' : 'Agents'}</div>
@@ -5264,3 +5264,4 @@ const settingsModule = { open, close, initIntegrations, initUnifiedIntegrations,
 
 
 export default settingsModule;
+

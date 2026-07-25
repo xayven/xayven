@@ -10,7 +10,7 @@ def _load_sessions_cli(monkeypatch):
         attributes={"SessionLocal": object, "Session": object},
         install_core_package=True,
     )
-    return load_script("helix-sessions")
+    return load_script("xayven-sessions")
 
 
 def test_serialize_normalizes_numeric_counters(monkeypatch):
@@ -37,3 +37,4 @@ def test_serialize_normalizes_numeric_counters(monkeypatch):
     assert out["message_count"] == 12
     assert out["total_input_tokens"] == 0
     assert out["total_output_tokens"] == 0
+

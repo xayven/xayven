@@ -1,8 +1,8 @@
-# H E L I X Testing Standard & Taxonomy
+# Xayven Testing Standard & Taxonomy
 
 ## Purpose
 
-This document defines *how we write and refactor tests* in H E L I X. It is the
+This document defines *how we write and refactor tests* in Xayven. It is the
 standard that the incremental test-suite refactor (issue #2523) works toward,
 and it applies to both human contributors and coding agents.
 
@@ -218,3 +218,4 @@ should be tracked as its own effort. The intended sequence:
 4. Only then make the pytest job a blocking CI gate.
 5. Consider `pytest-xdist` / parallel isolation after deterministic
    single-process randomized runs are stable.
+

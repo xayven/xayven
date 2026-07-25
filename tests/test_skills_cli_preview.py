@@ -15,7 +15,7 @@ def _load_cli(monkeypatch):
     mod = types.ModuleType("services.memory.skills")
     mod.SkillsManager = MagicMock()
     monkeypatch.setitem(sys.modules, "services.memory.skills", mod)
-    return load_script("helix-skills")
+    return load_script("xayven-skills")
 
 
 def test_preview_text_ignores_non_string(monkeypatch):
@@ -30,3 +30,4 @@ def test_summary_does_not_crash_on_non_string_description(monkeypatch):
     cli = _load_cli(monkeypatch)
     out = cli._summary({"name": "n", "description": 123})
     assert out["description"] == ""
+

@@ -1,5 +1,5 @@
 /**
- * Bombadil spec for H E L I X UI
+ * Bombadil spec for Xayven UI
  */
 import { extract, always, eventually, now, actions } from "@antithesishq/bombadil";
 export * from "@antithesishq/bombadil/defaults";
@@ -105,3 +105,4 @@ export const chatInputAppears = always(
     eventually(() => chatInput.current !== null).within(10, "seconds")
   )
 );
+

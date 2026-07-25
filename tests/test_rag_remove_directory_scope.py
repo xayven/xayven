@@ -3,7 +3,7 @@ directory's chunks, never wipe the whole shared collection.
 
 Two compounding defects were fixed:
   1. PersonalDocsManager.remove_directory called rag_manager.rebuild_index(),
-     which delete+recreates the entire shared "helix_rag" collection (all
+     which delete+recreates the entire shared "xayven_rag" collection (all
      owners + the base index), then re-indexed only the remaining tracked dirs
      (ownerless, never personal_dir). Now it does a targeted per-directory delete.
   2. VectorRAG.remove_directory selected via where={"source": {"$contains": dir}},
@@ -157,3 +157,4 @@ async def test_do_manage_rag_remove_does_not_rebuild(monkeypatch):
 
     assert calls["rebuild"] == 0, "remove must not rebuild (whole-collection wipe)"
     assert "error" not in result, result
+

@@ -248,7 +248,7 @@ class WebhookManager:
     async def deliver_test(self, webhook_id: str, url: str, encrypted_secret: Optional[str]):
         """Public method for the test-webhook route."""
         decrypted = self._decrypt_secret(encrypted_secret)
-        await self._deliver(webhook_id, url, decrypted, "webhook.test", {"message": "Test ping from H E L I X"})
+        await self._deliver(webhook_id, url, decrypted, "webhook.test", {"message": "Test ping from Xayven"})
 
     async def _deliver(self, webhook_id: str, url: str, secret: Optional[str], event: str, payload: dict):
         """Internal delivery. Never call directly from outside this class (use deliver_test)."""
@@ -262,12 +262,12 @@ class WebhookManager:
         body = json.dumps({"event": event, "timestamp": _utcnow().isoformat(), "data": payload})
         headers = {
             "Content-Type": "application/json",
-            "X-H E L I X-Event": event,
-            "User-Agent": "H E L I X-Webhook/1.0",
+            "X-Xayven-Event": event,
+            "User-Agent": "Xayven-Webhook/1.0",
         }
         if secret:
             sig = hmac.new(secret.encode(), body.encode(), hashlib.sha256).hexdigest()
-            headers["X-H E L I X-Signature"] = sig
+            headers["X-Xayven-Signature"] = sig
 
         db = SessionLocal()
         try:
@@ -294,3 +294,4 @@ class WebhookManager:
 
     async def close(self):
         await self._client.aclose()
+

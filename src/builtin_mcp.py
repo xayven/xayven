@@ -84,13 +84,13 @@ _BUILTIN_NPX_SERVERS = {
 }
 
 # Global flag to disable MCP if there are compatibility issues
-MCP_DISABLED = os.environ.get("HELIX_DISABLE_MCP", "").lower() in ("1", "true", "yes")
+MCP_DISABLED = os.environ.get("XAYVEN_DISABLE_MCP", "").lower() in ("1", "true", "yes")
 
 
 async def register_builtin_servers(mcp_manager):
     """Connect all built-in MCP servers to the manager."""
     if MCP_DISABLED:
-        logger.info("Built-in MCP servers disabled via HELIX_DISABLE_MCP")
+        logger.info("Built-in MCP servers disabled via XAYVEN_DISABLE_MCP")
         return
 
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -149,7 +149,7 @@ async def register_builtin_servers(mcp_manager):
                     f"  Reason: npm package {pkg_spec!r} is not installed in the npx cache.\n"
                     f"  Impact: tools provided by this MCP server will be unavailable.\n"
                     f"  Fix:    {os.path.basename(npx_path)} -y {pkg_spec} --version\n"
-                    f"          (run once, then restart H E L I X)\n"
+                    f"          (run once, then restart Xayven)\n"
                     f"  Notes:  this server is optional; see README.md "
                     f"'Built-in MCP servers' for details."
                 )
@@ -231,3 +231,4 @@ async def _is_npx_package_cached(npx_path, package_spec, timeout_s=5):
             pass
         return False
     return proc.returncode == 0 and bool(stdout.strip())
+

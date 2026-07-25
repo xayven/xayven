@@ -15,7 +15,7 @@ _PATH = Path(__file__).resolve().parents[1] / "services" / "search" / "query.py"
 def _load():
     # Load the module file directly so the package __init__ (which imports
     # httpx) isn't required.
-    loader = importlib.machinery.SourceFileLoader("helix_search_query", str(_PATH))
+    loader = importlib.machinery.SourceFileLoader("xayven_search_query", str(_PATH))
     spec = importlib.util.spec_from_loader(loader.name, loader)
     module = importlib.util.module_from_spec(spec)
     loader.exec_module(module)
@@ -38,3 +38,4 @@ def test_valid_query_still_works():
     assert q._detect_question_type("who is bob") == "who"
     assert q._is_news_query("latest news today") is True
     assert q._extract_site_filter("cats site:x.com")[1] == "x.com"
+

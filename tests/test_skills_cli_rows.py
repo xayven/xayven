@@ -9,7 +9,7 @@ def _load_cli(monkeypatch):
     svc = types.ModuleType("services.memory.skills")
     svc.SkillsManager = MagicMock()
     monkeypatch.setitem(sys.modules, "services.memory.skills", svc)
-    return load_script("helix-skills")
+    return load_script("xayven-skills")
 
 
 def test_skill_entries_skips_invalid_rows(monkeypatch):
@@ -20,3 +20,4 @@ def test_skill_entries_skips_invalid_rows(monkeypatch):
         "bad-row",
         None,
     ]) == [{"name": "deploy", "category": "ops"}]
+

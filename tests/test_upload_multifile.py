@@ -142,7 +142,7 @@ def test_rate_limit_accommodates_a_full_batch():
     # The per-minute file cap must comfortably exceed the frontend batch cap,
     # or a single legitimate multi-file attach trips it (issue #1346).
     h = UploadHandler.__new__(UploadHandler)
-    UploadHandler.__init__(h, base_dir="/tmp", upload_dir="/tmp/_helix_test_uploads_cfg")
+    UploadHandler.__init__(h, base_dir="/tmp", upload_dir="/tmp/_xayven_test_uploads_cfg")
     assert h.upload_rate_limit >= _max_files_from_frontend()
 
 
@@ -163,3 +163,4 @@ def test_six_file_batch_is_not_rate_limited(tmp_path):
         assert meta and meta.get("id")
         saved += 1
     assert saved == 6
+

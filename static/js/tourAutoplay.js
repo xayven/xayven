@@ -22,7 +22,7 @@ const TOUR_FOR_MODAL = {
   'gallery-modal':          'tour-gallery',
 };
 
-const SEEN_KEY = (tour) => `helix-tour-autoplay-seen-${tour}`;
+const SEEN_KEY = (tour) => `xayven-tour-autoplay-seen-${tour}`;
 
 let _initialized = false;
 // Suppress re-fire if a tour is already active or another modal opens while
@@ -131,3 +131,4 @@ if (typeof window !== 'undefined') {
 }
 
 export default { init };
+

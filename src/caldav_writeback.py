@@ -1,7 +1,7 @@
 """CalDAV write-back: push local create/update/delete out to the remote (#800).
 
 ``src/caldav_sync.py`` is a one-way pull (remote → local). So events created,
-edited, or deleted in H E L I X on a CalDAV-backed calendar only changed the local
+edited, or deleted in Xayven on a CalDAV-backed calendar only changed the local
 SQLite copy and never reached the server (iCloud/Nextcloud/Radicale/Fastmail) —
 they'd silently disappear on the next pull and never show on the user's phone.
 
@@ -40,7 +40,7 @@ def build_event_ical(ev: dict) -> str:
     from icalendar.prop import vRecur
 
     cal = Calendar()
-    cal.add("prodid", "-//H E L I X//CalDAV write-back//EN")
+    cal.add("prodid", "-//Xayven//CalDAV write-back//EN")
     cal.add("version", "2.0")
 
     ve = iEvent()
@@ -210,3 +210,4 @@ async def writeback_event(owner: str, calendar_source: str, calendar_id: str,
     except Exception as e:
         logger.exception("CalDAV write-back raised")
         return {"ok": False, "error": str(e)[:200]}
+

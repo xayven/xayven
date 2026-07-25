@@ -1,5 +1,5 @@
 """
-Basic tests for helix-ui application structure
+Basic tests for xayven-ui application structure
 """
 import pytest
 import sys
@@ -96,3 +96,4 @@ class TestRouteFiles:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+

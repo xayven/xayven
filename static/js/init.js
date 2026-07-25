@@ -1,4 +1,4 @@
-// H E L I X — Initialization Scripts
+// Xayven — Initialization Scripts
 // ES6 module — extracted from index.html inline scripts
 
 import Storage from './storage.js';
@@ -31,10 +31,10 @@ window.addEventListener('pageshow', clearFreshComposerRestore);
     const data = await res.json().catch(() => ({}));
     const liveUser = (data && data.username) || '';
     if (!liveUser) return;
-    const KEY = 'helix-auth-user';
+    const KEY = 'xayven-auth-user';
     const cachedUser = localStorage.getItem(KEY);
     if (cachedUser && cachedUser !== liveUser) {
-      const _keepKeys = new Set(['helix-last-user', KEY]);
+      const _keepKeys = new Set(['xayven-last-user', KEY]);
       const toRemove = [];
       for (let i = 0; i < localStorage.length; i++) {
         const k = localStorage.key(i);
@@ -403,3 +403,4 @@ window.addEventListener('pageshow', clearFreshComposerRestore);
   else window.addEventListener('load', release);
   setTimeout(release, 1200);  // hard fallback — never leave the splash hidden
 })();
+

@@ -25,9 +25,9 @@ export const WAVE_FRAMES = ['▁▂▃', '▂▃▄', '▃▄▅', '▄▅▆', 
 
 // ── Storage keys & limits ──
 
-export const VOTES_STORAGE_KEY = 'helix-compare-votes';
+export const VOTES_STORAGE_KEY = 'xayven-compare-votes';
 export const VOTES_MAX = 200;
-export const POOL_STORAGE_KEY = 'helix-shuffle-pool-excluded';
+export const POOL_STORAGE_KEY = 'xayven-shuffle-pool-excluded';
 
 // ── Evaluation prompt templates ──
 //
@@ -75,3 +75,4 @@ export const EVAL_PROMPTS = {
     { sub: 'Factual',    label: 'Science',        prompt: 'CRISPR gene therapy breakthroughs' },
   ],
 };
+

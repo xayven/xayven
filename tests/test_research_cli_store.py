@@ -5,7 +5,7 @@ from tests.helpers.cli_loader import load_script
 
 
 def _load_cli():
-    return load_script("helix-research")
+    return load_script("xayven-research")
 
 
 def test_list_skips_non_object_research_records(tmp_path, monkeypatch):
@@ -30,3 +30,4 @@ def test_list_skips_non_object_research_records(tmp_path, monkeypatch):
         "sources": 0,
         "stats": {},
     }]]
+

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Create/remove the switchable, non-default 'Demo' EmailAccount in H E L I X.
+"""Create/remove the switchable, non-default 'Demo' EmailAccount in Xayven.
 
 Mirrors the existing local-Dovecot account (localhost:31143, STARTTLS) but points
-at the throwaway demo@helix.local mailbox. Password is stored Fernet-encrypted
+at the throwaway demo@xayven.local mailbox. Password is stored Fernet-encrypted
 via the app's own secret_storage, exactly like real accounts.
 
     python demo_account.py setup     # add (or update) the 'Demo' account
@@ -24,7 +24,7 @@ from core.database import SessionLocal, EmailAccount, Base, engine  # noqa: E402
 from src.secret_storage import encrypt  # noqa: E402
 
 NAME = "Demo"
-IMAP_USER = "demo@helix.local"
+IMAP_USER = "demo@xayven.local"
 IMAP_PASSWORD = "demodemo"
 # Owner empty-string => same list as the real Default account (switchable in the
 # account dropdown).
@@ -86,3 +86,4 @@ if __name__ == "__main__":
         raise SystemExit(teardown())
     print(__doc__)
     raise SystemExit(2)
+

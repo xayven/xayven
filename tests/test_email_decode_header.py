@@ -14,7 +14,7 @@ import os
 import tempfile
 from pathlib import Path
 
-_tmp_data = Path(tempfile.mkdtemp(prefix="helix_decode_hdr_"))
+_tmp_data = Path(tempfile.mkdtemp(prefix="xayven_decode_hdr_"))
 os.environ.setdefault("DATA_DIR", str(_tmp_data))
 os.environ.setdefault("DATABASE_URL", f"sqlite:///{_tmp_data / 'app.db'}")
 
@@ -49,3 +49,4 @@ def test_plain_ascii_passthrough():
 def test_empty_and_none():
     assert _decode_header("") == ""
     assert _decode_header(None) == ""
+

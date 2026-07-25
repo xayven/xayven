@@ -53,12 +53,12 @@ export function initKeyboardShortcuts(modules) {
     _closeCompareIfActive, _deactivateIncognito, API_BASE
   } = modules;
 
-  window._helixKeybinds = { ..._defaultKeybinds };
+  window._xayvenKeybinds = { ..._defaultKeybinds };
 
   // Load saved keybinds
   fetch('/api/auth/settings', { credentials: 'same-origin' })
     .then(r => r.json())
-    .then(s => { if (s.keybinds) window._helixKeybinds = { ..._defaultKeybinds, ...s.keybinds }; })
+    .then(s => { if (s.keybinds) window._xayvenKeybinds = { ..._defaultKeybinds, ...s.keybinds }; })
     .catch(() => {});
 
   // ── Esc cancels select mode (capture phase, before modal-close) ──
@@ -142,7 +142,7 @@ export function initKeyboardShortcuts(modules) {
   };
 
   document.addEventListener('keydown', (e) => {
-    const kb = window._helixKeybinds;
+    const kb = window._xayvenKeybinds;
 
     if (_matchesCombo(e, kb.search)) {
       e.preventDefault();
@@ -211,7 +211,7 @@ export function initKeyboardShortcuts(modules) {
           } else {
             sessionModule.setCurrentSessionId(null);
             el('chat-history').innerHTML = '';
-            el('current-meta').textContent = 'H E L I X Chat';
+            el('current-meta').textContent = 'Xayven Chat';
             Storage.remove('lastSessionId');
             if (chatModule && chatModule.showWelcomeScreen) chatModule.showWelcomeScreen();
           }
@@ -290,3 +290,4 @@ export function initKeyboardShortcuts(modules) {
     }
   });
 }
+

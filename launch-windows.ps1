@@ -1,6 +1,6 @@
 #Requires -Version 5.1
 <#
-  H E L I X - native Windows launcher (no Docker).
+  Xayven - native Windows launcher (no Docker).
 
   One command to: create a virtualenv, install dependencies, run first-time
   setup (prints an admin password on first run), and start the server.
@@ -130,7 +130,8 @@ if (-not (Find-GitBash)) {
 }
 
 # 6. Start the server (use `python -m uvicorn` - bare `uvicorn` may not be on PATH)
-Write-Step ("Starting H E L I X at http://{0}:{1}" -f $BindHost, $Port)
+Write-Step ("Starting Xayven at http://{0}:{1}" -f $BindHost, $Port)
 Write-Host "Press Ctrl+C to stop."
 Write-Host ""
 & $venvPy -m uvicorn app:app --host $BindHost --port $Port
+
