@@ -15,7 +15,7 @@ def test_playwright_mcp_connection_error_includes_install_hint():
     assert "package not found" in msg
     assert "Browser MCP could not start" in msg
     assert "npx -y @playwright/mcp@latest --version" in msg
-    assert "restart H E L I X" in msg
+    assert "restart Xayven" in msg
 
 
 def test_generic_mcp_connection_error_preserves_original_error():
@@ -39,3 +39,4 @@ def test_http_transport_routes_to_start_http_connect():
         result = asyncio.run(mgr.connect_server("id1", "n", "http", url="https://x/mcp"))
     assert result == "ROUTED"
     m.assert_called_once()
+

@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-_tmp_data = Path(tempfile.mkdtemp(prefix="helix-email-imap-test-"))
+_tmp_data = Path(tempfile.mkdtemp(prefix="xayven-email-imap-test-"))
 os.environ.setdefault("DATA_DIR", str(_tmp_data))
 os.environ.setdefault("DATABASE_URL", f"sqlite:///{_tmp_data / 'app.db'}")
 
@@ -124,3 +124,4 @@ async def test_account_config_uses_shared_imap_timeout(monkeypatch):
     assert captured["open"] == ("imap.one.com", 993, False, _IMAP_TIMEOUT_SECONDS)
     assert captured["login"] == ("user@example.com", "pw")
     assert captured["logout"] is True
+

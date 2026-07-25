@@ -123,7 +123,7 @@ class TestFindLineBreak:
 
 
 class TestRunningInContainer:
-    """Detect whether the H E L I X process itself runs inside a container."""
+    """Detect whether the Xayven process itself runs inside a container."""
 
     def test_dockerenv_marker_present(self, tmp_path):
         marker = tmp_path / ".dockerenv"
@@ -309,7 +309,7 @@ class TestPackageProbeStatus:
 
         assert _package_installed_from_probe("vllm", probe) is True
         assert status.available is False
-        assert "outside H E L I X" in status.note
+        assert "outside Xayven" in status.note
 
     def test_llama_cpp_is_installed_when_native_llama_server_exists(self):
         probe = {
@@ -326,14 +326,14 @@ class TestPackageProbeStatus:
         assert status.available is False
         assert "package manager or source checkout" in status.note
 
-    def test_apfel_does_not_use_generic_outside_helix_note(self):
+    def test_apfel_does_not_use_generic_outside_xayven_note(self):
         status = _package_pip_update_status(
             {"name": "APFEL", "pip": "", "update_cmd": "brew upgrade apfel"},
             {"binaries": {}, "dists": {}, "modules": {}},
         )
 
         assert status.available is False
-        assert "Update this system dependency outside H E L I X." not in status.note
+        assert "Update this system dependency outside Xayven." not in status.note
 
     def test_diffusers_requires_torch_too(self):
         missing_torch = {
@@ -458,3 +458,4 @@ class TestRejectCrossSite:
 
     def test_missing_header_allowed(self):
         assert _reject_cross_site(self._req({})) is None
+

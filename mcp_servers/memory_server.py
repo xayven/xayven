@@ -2,7 +2,7 @@
 memory_server.py
 
 MCP server exposing memory management (list, add, edit, delete, search).
-Imports MemoryManager and MemoryVectorStore from the H E L I X codebase.
+Imports MemoryManager and MemoryVectorStore from the Xayven codebase.
 """
 
 import asyncio
@@ -205,3 +205,4 @@ async def run():
 
 if __name__ == "__main__":
     asyncio.run(run())
+

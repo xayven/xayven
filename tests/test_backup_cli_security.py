@@ -9,7 +9,7 @@ from tests.helpers.cli_loader import load_script
 
 
 def _load_backup_cli():
-    return load_script("helix-backup")
+    return load_script("xayven-backup")
 
 
 def _patch_repo(module, monkeypatch, root: Path):
@@ -124,3 +124,4 @@ def test_restore_extracts_regular_files_without_extractall(tmp_path, monkeypatch
     assert (repo / "data" / "nested" / "new.txt").read_text(encoding="utf-8") == "new"
     assert not (repo / "data" / "old.txt").exists()
     assert list(repo.glob("data.before-restore-*"))
+

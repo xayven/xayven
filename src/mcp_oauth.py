@@ -1,7 +1,7 @@
 """mcp_oauth.py — generic OAuth for remote (Streamable HTTP) MCP servers.
 
 Bridges the mcp SDK's OAuthClientProvider (RFC 9728 discovery, Dynamic Client
-Registration, authorization-code + PKCE, token refresh) to H E L I X's web
+Registration, authorization-code + PKCE, token refresh) to Xayven's web
 callback route. Tokens and the dynamic registration persist per-server,
 encrypted, so the interactive flow runs only once.
 """
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 # paste-back flow. Deployments not reachable at http://localhost:7777 (custom
 # port, reverse proxy, or public domain) must set OAUTH_REDIRECT_BASE_URL (or
 # APP_PUBLIC_URL) to their externally reachable origin so the redirect lands back
-# on H E L I X. APP_PORT is intentionally not used: it is only the Docker host
+# on Xayven. APP_PORT is intentionally not used: it is only the Docker host
 # port-map; the app always listens on 7000 inside the container.
 _REDIRECT_BASE = (
     os.environ.get("OAUTH_REDIRECT_BASE_URL")
@@ -136,7 +136,7 @@ class DbTokenStorage:
 
 def build_provider(server_id: str, url: str, on_redirect=None):
     """Construct an OAuthClientProvider that drives the browser flow via the
-    H E L I X callback route.
+    Xayven callback route.
 
     on_redirect(authorization_url): optional sync callback invoked the moment
     the authorization URL is known (after discovery + DCR). The manager uses it
@@ -147,7 +147,7 @@ def build_provider(server_id: str, url: str, on_redirect=None):
     from mcp.shared.auth import OAuthClientMetadata
 
     client_metadata = OAuthClientMetadata(
-        client_name="H E L I X",
+        client_name="Xayven",
         redirect_uris=[REDIRECT_URI],
         grant_types=["authorization_code", "refresh_token"],
         response_types=["code"],
@@ -191,3 +191,4 @@ def build_provider(server_id: str, url: str, on_redirect=None):
         redirect_handler=redirect_handler,
         callback_handler=callback_handler,
     )
+

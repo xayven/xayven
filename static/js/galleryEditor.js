@@ -3189,7 +3189,7 @@ function _openCookbookForDependency(pkgName) {
   tryHighlight();
 }
 
-// Async check whether `rembg` is installed on the H E L I X server.
+// Async check whether `rembg` is installed on the Xayven server.
 // Toggles the "install rembg" notice + the Bg Remove run button. The
 // `/api/cookbook/packages` endpoint is cheap (importlib calls only).
 async function _checkRembgInstalled() {
@@ -3282,7 +3282,7 @@ function _saveProject() {
   }
   const project = {
     v: 1,
-    type: 'helix-gallery-editor-project',
+    type: 'xayven-gallery-editor-project',
     imgWidth: state.imgWidth,
     imgHeight: state.imgHeight,
     activeLayerId: state.activeLayerId,
@@ -3321,7 +3321,7 @@ function _loadProjectPrompt() {
     try {
       const text = await file.text();
       const proj = JSON.parse(text);
-      if (proj.type !== 'helix-gallery-editor-project') {
+      if (proj.type !== 'xayven-gallery-editor-project') {
         if (uiModule) uiModule.showToast('Not a project file', 5000);
         return;
       }
@@ -3796,3 +3796,4 @@ const galleryEditorModule = {
 };
 
 export default galleryEditorModule;
+

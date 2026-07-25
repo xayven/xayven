@@ -1,6 +1,6 @@
 # Roadmap / Help Wanted
 
-H E L I X is on a voyage, but not home yet. It works great for me (lol), but this ship is moving fast and feedback/help would be appreciated! (I don't know what I'm doing, help).
+Xayven is on a voyage, but not home yet. It works great for me (lol), but this ship is moving fast and feedback/help would be appreciated! (I don't know what I'm doing, help).
 
 If you see weird CSS, strange layout behavior, or a suspiciously murky corner of
 the codebase, you are probably right to stay away.
@@ -78,3 +78,4 @@ the codebase, you are probably right to stay away.
 ## Not The Focus Right Now
 
 I prob shouldnt add more themes.
+

@@ -752,11 +752,11 @@ def setup_contacts_routes():
         if format == "csv":
             content = _contacts_to_csv(contacts)
             media_type = "text/csv; charset=utf-8"
-            filename = "helix-contacts.csv"
+            filename = "xayven-contacts.csv"
         else:
             content = _contacts_to_vcf(contacts)
             media_type = "text/vcard; charset=utf-8"
-            filename = "helix-contacts.vcf"
+            filename = "xayven-contacts.vcf"
         return Response(
             content=content,
             media_type=media_type,
@@ -823,3 +823,4 @@ def setup_contacts_routes():
         return {"success": ok}
 
     return router
+

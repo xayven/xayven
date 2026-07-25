@@ -45,7 +45,7 @@ def _load_mail_cli(monkeypatch):
         attributes={"SessionLocal": object, "EmailAccount": object},
         install_core_package=True,
     )
-    return load_script("helix-mail")
+    return load_script("xayven-mail")
 
 
 def test_cmd_read_handles_empty_fetch_payload(monkeypatch):
@@ -55,3 +55,4 @@ def test_cmd_read_handles_empty_fetch_payload(monkeypatch):
     # the guard turns it into a clean fail() (SystemExit).
     with pytest.raises(SystemExit):
         cli.cmd_read(args)
+

@@ -2,7 +2,7 @@
 ---------" divider as a quote boundary, like "----- Original Message -----".
 
 `_ORIG_RE` already recognised the Japanese forward marker (転送) but not the
-English "Forwarded message" one, so forwarded mail produced by H E L I X itself
+English "Forwarded message" one, so forwarded mail produced by Xayven itself
 (static/js/emailInbox.js emits exactly `---------- Forwarded message ----------`)
 leaked the divider into the level-0 reply bubble — or, with no Outlook header
 block to fall back on, was not split into turns at all.
@@ -55,3 +55,4 @@ def test_forwarded_words_without_delimiters_do_not_split():
     # with no [-_=]{3,} delimiters, must NOT be treated as a divider.
     text = "I forwarded message after message to the team but heard nothing back."
     assert parse_thread(None, text) is None
+

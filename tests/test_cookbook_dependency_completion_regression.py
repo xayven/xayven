@@ -32,7 +32,7 @@ def test_local_windows_session_commands_use_local_powershell_log_dir():
     source = _read("static/js/cookbookRunning.js")
 
     assert "const host = task.remoteHost;" in source
-    assert "host ? '$env:TEMP\\\\helix-sessions' : '$env:TEMP\\\\helix-tmux'" in source
+    assert "host ? '$env:TEMP\\\\xayven-sessions' : '$env:TEMP\\\\xayven-tmux'" in source
     assert "return host ? `ssh ${pf}${host}" in source
     assert ": `powershell -Command \"${ps}\"`;" in source
 
@@ -89,3 +89,4 @@ def test_local_dependency_probe_refreshes_user_site_visibility():
     assert "importlib.invalidate_caches()" in source
     assert "user_site = site.getusersitepackages()" in source
     assert "if user_site and os.path.isdir(user_site) and user_site not in sys.path:" in source
+

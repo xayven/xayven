@@ -322,9 +322,9 @@ def _normalize_ollama_url(url: str) -> str:
 
 
 def _ollama_normalize_tool_messages(messages: List[Dict]) -> List[Dict]:
-    """Adapt H E L I X' canonical OpenAI-style messages to native Ollama /api/chat.
+    """Adapt Xayven' canonical OpenAI-style messages to native Ollama /api/chat.
 
-    H E L I X carries assistant tool calls in the OpenAI shape, where
+    Xayven carries assistant tool calls in the OpenAI shape, where
     `function.arguments` is a JSON *string*. Native Ollama expects it to be a
     JSON *object*; given the string it fails the whole request with HTTP 400
     "Value looks like object, but can't find closing '}' symbol", which aborts
@@ -481,7 +481,7 @@ def _apply_local_cache_affinity(payload: Dict, url: str, session_id: Optional[st
     slots via LRU when no stable identifier is present ("session_id=<empty>
     server-selected (LCP/LRU)"), which means consecutive turns of the same
     chat can land on different slots and lose their cached prefix entirely.
-    Sending a stable ``session_id`` (derived from the H E L I X session) lets
+    Sending a stable ``session_id`` (derived from the Xayven session) lets
     the server keep routing the same conversation to the same slot, and
     ``cache_prompt: true`` asks it to retain/reuse the prefix it already has.
 
@@ -503,8 +503,8 @@ def _provider_headers(provider: str, headers: Optional[Dict] = None) -> Dict[str
     if isinstance(headers, dict):
         h.update(headers)
     if provider == "openrouter":
-        h.setdefault("HTTP-Referer", "https://github.com/samayran-ik/helix-v3")
-        h.setdefault("X-OpenRouter-Title", "H E L I X")
+        h.setdefault("HTTP-Referer", "https://github.com/samayran-ik/xayven-v3")
+        h.setdefault("X-OpenRouter-Title", "Xayven")
     if provider == "copilot":
         # Ensure the Copilot-required headers are present even when the caller
         # didn't pass pre-built headers (e.g. model listing). build_headers()
@@ -865,7 +865,7 @@ def _as_content_blocks(content) -> List[Dict]:
 
 
 def _sanitize_llm_messages(messages: List[Dict]) -> List[Dict]:
-    """Strip H E L I X-only metadata before sending messages to providers.
+    """Strip Xayven-only metadata before sending messages to providers.
 
     Per the OpenAI chat format: user/system messages must have content; a tool
     message needs content + tool_call_id; an assistant message may carry content,
@@ -2134,3 +2134,4 @@ async def stream_llm_with_fallback(candidates, messages, **kwargs):
     # Every candidate failed pre-content — surface the last error.
     if last_error:
         yield last_error
+

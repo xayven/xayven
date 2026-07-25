@@ -25,7 +25,7 @@ def _format_mcp_connection_error(name: str, command: str = "", args: Optional[Li
             f"{raw_error}\n\n"
             "Browser MCP could not start. On fresh installs, cache the Playwright MCP package once before connecting:\n\n"
             "npx -y @playwright/mcp@latest --version\n\n"
-            "Then restart H E L I X and reconnect the Browser MCP server."
+            "Then restart Xayven and reconnect the Browser MCP server."
         )
 
     return raw_error
@@ -670,3 +670,4 @@ class McpManager:
         self._cached_prompt_desc = result
         self._cached_prompt_desc_key = cache_key
         return result
+

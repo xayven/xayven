@@ -5,8 +5,8 @@ migrate_faiss_to_chroma.py
 One-time migration of existing FAISS data to ChromaDB.
 
 Migrates:
-  - Memory vectors: data/memory_vectors/ -> helix_memories collection
-  - RAG vectors:    data/rag/            -> helix_rag collection
+  - Memory vectors: data/memory_vectors/ -> xayven_memories collection
+  - RAG vectors:    data/rag/            -> xayven_rag collection
 
 Usage:
     python scripts/migrate_faiss_to_chroma.py
@@ -91,7 +91,7 @@ def migrate_memories():
 
     client = get_chroma_client()
     collection = client.get_or_create_collection(
-        name="helix_memories",
+        name="xayven_memories",
         metadata={"hnsw:space": "cosine"},
     )
 
@@ -144,7 +144,7 @@ def migrate_rag():
 
     client = get_chroma_client()
     collection = client.get_or_create_collection(
-        name="helix_rag",
+        name="xayven_rag",
         metadata={"hnsw:space": "cosine"},
     )
 
@@ -171,3 +171,4 @@ if __name__ == "__main__":
     migrate_memories()
     migrate_rag()
     logger.info("Migration complete")
+

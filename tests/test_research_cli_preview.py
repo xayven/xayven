@@ -7,7 +7,7 @@ from tests.helpers.cli_loader import load_script
 
 
 def _load_cli():
-    return load_script("helix-research")
+    return load_script("xayven-research")
 
 
 def test_preview_text_ignores_non_string():
@@ -23,3 +23,4 @@ def test_summarize_does_not_crash_on_non_string_query():
     out = cli._summarize("rp1", {"query": 123, "status": "done"})
     assert out["query"] == ""
     assert out["id"] == "rp1"
+

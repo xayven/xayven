@@ -8,11 +8,11 @@ APP_VERSION = "1.0.0"
 # Base paths
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/"
 STATIC_DIR = os.path.join(BASE_DIR, "static")
-DATA_DIR = os.getenv("HELIX_DATA_DIR", os.path.join(BASE_DIR, "data"))
+DATA_DIR = os.getenv("XAYVEN_DATA_DIR", os.path.join(BASE_DIR, "data"))
 
 # Data file paths
 # Single source of truth: every persisted file/dir lives under DATA_DIR, which
-# is the ONLY place HELIX_DATA_DIR is read. Import these constants instead of
+# is the ONLY place XAYVEN_DATA_DIR is read. Import these constants instead of
 # re-deriving paths from __file__ or a relative "data" literal.
 SESSIONS_FILE = os.path.join(DATA_DIR, "sessions.json")
 MEMORY_FILE = os.path.join(DATA_DIR, "memory.json")
@@ -55,7 +55,7 @@ GALLERY_UPLOADS_DIR = os.path.join(DATA_DIR, "gallery_uploads")
 MEMORY_VECTORS_DIR = os.path.join(DATA_DIR, "memory_vectors")
 
 # Paths with an intentional dedicated env override, defaulting under DATA_DIR.
-MAIL_ATTACHMENTS_DIR = os.getenv("HELIX_MAIL_ATTACHMENTS_DIR", os.path.join(DATA_DIR, "mail-attachments"))
+MAIL_ATTACHMENTS_DIR = os.getenv("XAYVEN_MAIL_ATTACHMENTS_DIR", os.path.join(DATA_DIR, "mail-attachments"))
 FASTEMBED_CACHE_DIR = os.getenv("FASTEMBED_CACHE_PATH", os.path.join(DATA_DIR, "fastembed_cache"))
 
 # Agent tool output limits (single source of truth — imported by tool_execution.py,
@@ -86,11 +86,11 @@ DEFAULT_MAX_TOKENS = 0
 
 
 def internal_api_base() -> str:
-    """Base URL for in-process loopback calls to H E L I X's own API.
+    """Base URL for in-process loopback calls to Xayven's own API.
 
     Agent tools and background jobs reach admin-gated routes by calling the
     running server over HTTP. Resolution order:
-      1. HELIX_INTERNAL_BASE  - explicit override (e.g. behind a TLS proxy).
+      1. XAYVEN_INTERNAL_BASE  - explicit override (e.g. behind a TLS proxy).
       2. APP_PORT             - http://127.0.0.1:$APP_PORT (docker-compose).
       3. Fallback http://127.0.0.1:7777 - default.
 
@@ -98,7 +98,8 @@ def internal_api_base() -> str:
     call. Without this, loopback tools fail with "All connection attempts
     failed" whenever the server is not on the default port.
     """
-    override = os.environ.get("HELIX_INTERNAL_BASE")
+    override = os.environ.get("XAYVEN_INTERNAL_BASE")
     if override:
         return override.rstrip("/")
     return f"http://127.0.0.1:{os.environ.get('APP_PORT', '7777')}"
+

@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 class MemoryVectorStore:
     """Vector index over memory entries for semantic retrieval."""
 
-    COLLECTION_NAME = "helix_memories"
+    COLLECTION_NAME = "xayven_memories"
 
     def __init__(self, data_dir: str, embedding_model=None):
         self._model = embedding_model
@@ -249,3 +249,4 @@ class MemoryVectorStore:
             "count": self.count(),
             "lanes": [lane.stats() for lane in self._lanes],
         }
+

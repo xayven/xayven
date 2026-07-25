@@ -69,7 +69,7 @@ class SupabaseAuth:
 
         return response.json()
 
-    def find_or_create_helix_user(self, user_data: Dict[str, Any]) -> str:
+    def find_or_create_xayven_user(self, user_data: Dict[str, Any]) -> str:
         email = (user_data.get("email") or "").strip().lower()
 
         if not email:
@@ -96,7 +96,7 @@ class SupabaseAuth:
                 )
 
             logger.info(
-                "Created HELIX user from Google login: %s",
+                "Created XAYVEN user from Google login: %s",
                 username,
             )
 
@@ -109,7 +109,7 @@ class SupabaseAuth:
         
         user_data = self.verify_access_token(access_token)
 
-        username = self.find_or_create_helix_user(user_data)
+        username = self.find_or_create_xayven_user(user_data)
 
         session_token = self.auth_manager.create_session_trusted(
             username
@@ -122,3 +122,4 @@ class SupabaseAuth:
             "session_token": session_token,
             "provider": "google",
         }
+

@@ -11,7 +11,7 @@ def _load_cli(monkeypatch):
     routes._fetch_contacts = MagicMock()
     routes._create_contact = MagicMock()
     monkeypatch.setitem(sys.modules, "routes.contacts_routes", routes)
-    return load_script("helix-contacts")
+    return load_script("xayven-contacts")
 
 
 def test_contact_rows_skips_invalid_rows(monkeypatch):
@@ -22,3 +22,4 @@ def test_contact_rows_skips_invalid_rows(monkeypatch):
         "bad-row",
         None,
     ]) == [{"name": "Ada", "email": "ada@example.test"}]
+

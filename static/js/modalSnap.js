@@ -20,8 +20,8 @@
 const SNAP_PX = 60;
 const UNSNAP_PX = 80;
 const MIN_CHAT_WIDTH = 380;
-const EMAIL_DOC_SPLIT_WIDTH_KEY = 'helix-email-doc-split-width';
-const EDGE_DOCK_WIDTH_KEY_PREFIX = 'helix-edge-dock-width';
+const EMAIL_DOC_SPLIT_WIDTH_KEY = 'xayven-email-doc-split-width';
+const EDGE_DOCK_WIDTH_KEY_PREFIX = 'xayven-edge-dock-width';
 const MIN_EDGE_DOCK_WIDTH = 320;
 
 let _edgeDockHandlePositioner = null;
@@ -981,7 +981,7 @@ export function makeEdgeDockController(modal, side = 'right', dockClass) {
   };
   new MutationObserver(schedulePosition).observe(document.body, { childList: true });
   window.addEventListener('resize', _positionEdgeDockResizeHandles);
-  window.addEventListener('helix:modal-opened', _positionEdgeDockResizeHandles);
+  window.addEventListener('xayven:modal-opened', _positionEdgeDockResizeHandles);
   _positionEdgeDockResizeHandles();
 })();
 
@@ -1073,3 +1073,4 @@ export function makeEdgeDockController(modal, side = 'right', dockClass) {
   window.addEventListener('resize', _position);
   _position();
 })();
+

@@ -1,6 +1,6 @@
 """Windows support for Cookbook hardware-fit.
 
-H E L I X only supports llama.cpp on Windows (vLLM/SGLang are explicitly
+Xayven only supports llama.cpp on Windows (vLLM/SGLang are explicitly
 blocked). llama.cpp requires GGUF, so non-GGUF models — including AWQ/GPTQ/
 FP8 safetensors repos — must be filtered out on Windows so the Cookbook does
 not recommend models the user cannot actually serve.
@@ -72,3 +72,4 @@ def test_gguf_alternate_still_recommended_on_windows():
     still appear on Windows even though the AWQ variant is hidden."""
     names = {r["name"] for r in rank_models(_windows_system(), limit=900)}
     assert "Qwen/Qwen2.5-3B-Instruct" in names
+

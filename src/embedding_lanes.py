@@ -30,7 +30,7 @@ class SupabaseVectorCollection:
         try:
             with engine.connect() as conn:
                 res = conn.execute(
-                    text("SELECT COUNT(*) FROM helix_vectors WHERE collection_name = :name"),
+                    text("SELECT COUNT(*) FROM xayven_vectors WHERE collection_name = :name"),
                     {"name": self.name}
                 ).scalar()
                 return int(res or 0)
@@ -43,13 +43,13 @@ class SupabaseVectorCollection:
             with engine.connect() as conn:
                 if ids:
                     res = conn.execute(
-                        text("SELECT id FROM helix_vectors WHERE collection_name = :name AND id = ANY(:ids)"),
+                        text("SELECT id FROM xayven_vectors WHERE collection_name = :name AND id = ANY(:ids)"),
                         {"name": self.name, "ids": ids}
                     ).fetchall()
                     return {"ids": [row[0] for row in res], "documents": [], "metadatas": []}
                 
                 res = conn.execute(
-                    text("SELECT id, document, metadata FROM helix_vectors WHERE collection_name = :name"),
+                    text("SELECT id, document, metadata FROM xayven_vectors WHERE collection_name = :name"),
                     {"name": self.name}
                 ).fetchall()
                 
@@ -71,7 +71,7 @@ class SupabaseVectorCollection:
                     
                     conn.execute(
                         text("""
-                            INSERT INTO helix_vectors (id, collection_name, document, metadata, embedding)
+                            INSERT INTO xayven_vectors (id, collection_name, document, metadata, embedding)
                             VALUES (:id, :name, :doc, :meta, :emb)
                             ON CONFLICT (id) DO UPDATE 
                             SET document = EXCLUDED.document, metadata = EXCLUDED.metadata, embedding = EXCLUDED.embedding
@@ -94,7 +94,7 @@ class SupabaseVectorCollection:
         try:
             with engine.begin() as conn:
                 conn.execute(
-                    text("DELETE FROM helix_vectors WHERE collection_name = :name AND id = ANY(:ids)"),
+                    text("DELETE FROM xayven_vectors WHERE collection_name = :name AND id = ANY(:ids)"),
                     {"name": self.name, "ids": ids}
                 )
         except Exception as e:
@@ -107,7 +107,7 @@ class SupabaseVectorCollection:
             
             sql = """
                 SELECT id, document, metadata, (embedding <=> :emb) as distance 
-                FROM helix_vectors 
+                FROM xayven_vectors 
                 WHERE collection_name = :name
             """
             params = {"name": self.name, "emb": str(target_emb), "limit": n_results}

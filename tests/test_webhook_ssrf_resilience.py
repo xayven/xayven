@@ -102,7 +102,7 @@ async def test_webhook_delivery_uses_naive_utc_timestamps(monkeypatch):
 
         async def post(self, _url, content, headers):
             self.content = content
-            assert headers["X-H E L I X-Event"] == "webhook.test"
+            assert headers["X-Xayven-Event"] == "webhook.test"
             return _Response()
 
     db = _Db()
@@ -122,3 +122,4 @@ async def test_webhook_delivery_uses_naive_utc_timestamps(monkeypatch):
     assert db.updates[0]["last_status_code"] == 204
     assert db.committed is True
     assert db.closed is True
+

@@ -39,7 +39,7 @@ def test_censor_pref_reads_enabled_flag():
     values = _node_eval(
         """
         globalThis.localStorage = {
-          getItem(key) { return key === 'helix-sensitive-blur' ? 'on' : null; }
+          getItem(key) { return key === 'xayven-sensitive-blur' ? 'on' : null; }
         };
         const { _prefEnabled } = await import('./static/js/censor.js');
         console.log(JSON.stringify({ enabled: _prefEnabled() }));
@@ -47,3 +47,4 @@ def test_censor_pref_reads_enabled_flag():
     )
 
     assert values == {"enabled": True}
+

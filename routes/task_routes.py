@@ -42,7 +42,7 @@ def _maybe_cascade_calendar_event(task) -> None:
     from core.middleware import INTERNAL_TOOL_HEADER, INTERNAL_TOOL_TOKEN
     headers = {INTERNAL_TOOL_HEADER: INTERNAL_TOOL_TOKEN}
     if task.owner:
-        headers["X-H E L I X-Owner"] = task.owner
+        headers["X-Xayven-Owner"] = task.owner
 
     # Strategy 1: explicit UID marker in prompt.
     event_uid = ""
@@ -1155,3 +1155,4 @@ def setup_task_routes(task_scheduler) -> APIRouter:
             return {"success": False, "message": str(e)}
 
     return router
+

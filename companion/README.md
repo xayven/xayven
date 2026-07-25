@@ -1,7 +1,7 @@
 # Companion bridge
 
 A thin, additive layer so a LAN client (e.g. a phone) can discover what an
-H E L I X server offers and pair to it, without duplicating any LLM logic.
+Xayven server offers and pair to it, without duplicating any LLM logic.
 
 | Method | Path | Auth | Purpose |
 |---|---|---|---|
@@ -26,3 +26,4 @@ works on the next request without a restart.
 The pairing/scoping rules live in small, tested units (`token_owner`,
 `owner_can_see`, `mint_pairing_token`, `pairing.*`) — see
 `tests/test_companion_readonly.py` and `tests/test_companion_pairing.py`.
+

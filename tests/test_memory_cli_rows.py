@@ -9,7 +9,7 @@ def _load_cli(monkeypatch):
     svc = types.ModuleType("services.memory.memory")
     svc.MemoryManager = MagicMock()
     monkeypatch.setitem(sys.modules, "services.memory.memory", svc)
-    return load_script("helix-memory")
+    return load_script("xayven-memory")
 
 
 def test_memory_entries_skips_invalid_rows(monkeypatch):
@@ -20,3 +20,4 @@ def test_memory_entries_skips_invalid_rows(monkeypatch):
         "bad-row",
         None,
     ]) == [{"id": "m1", "text": "ok"}]
+

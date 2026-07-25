@@ -19,7 +19,7 @@ It is a triage helper, not a replacement for maintainer judgment.
 - It does not post comments.
 - It does not review, approve, label, close, merge, or otherwise mutate PRs.
 - It does not add or run GitHub Actions.
-- It does not import the H E L I X application package.
+- It does not import the Xayven application package.
 - It does not claim that a PR is definitely blocked or duplicated.
 
 ## Read-only safety guarantee
@@ -186,3 +186,4 @@ python3 -m pytest tests/test_pr_blocker_audit.py -q
 python3 scripts/pr_blocker_audit.py --help
 git diff --check
 ```
+

@@ -130,7 +130,7 @@ def test_headers_openrouter_adds_attribution():
     assert h["Authorization"] == "Bearer secret"
     # OpenRouter ranks/labels apps via these headers.
     assert h["HTTP-Referer"].startswith("https://github.com/")
-    assert h["X-OpenRouter-Title"] == "H E L I X"
+    assert h["X-OpenRouter-Title"] == "Xayven"
 
 
 def test_headers_omit_authorization_when_no_key():
@@ -239,3 +239,4 @@ class TestResolveUrlTailscale:
 
     def test_url_without_hostname_is_returned_as_is(self):
         assert er.resolve_url("") == ""
+

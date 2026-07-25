@@ -23,7 +23,7 @@ Example (GigaChat):
     # Sber publishes the chain at
     # https://www.gosuslugi.ru/crt/rootca_ssl_rsa2022.cer
     # Convert to PEM and point the env var at it.
-    LLM_CA_BUNDLE=/etc/helix/ca/russian-trusted-root.pem
+    LLM_CA_BUNDLE=/etc/xayven/ca/russian-trusted-root.pem
 
 Scope:
     `llm_verify()` is intentionally consumed by only two call sites — the
@@ -89,3 +89,4 @@ def llm_verify():
     LLM_CA_BUNDLE is set and loaded; otherwise True (httpx default — system
     / certifi bundle, verification fully on)."""
     return _SHARED_SSL_CONTEXT if _SHARED_SSL_CONTEXT is not None else True
+

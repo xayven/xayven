@@ -80,7 +80,7 @@ def chatgpt_headers(access_token: Optional[str]) -> Dict[str, str]:
         "Accept": "application/json, text/event-stream",
         "Origin": "https://chatgpt.com",
         "Referer": "https://chatgpt.com/codex",
-        "User-Agent": "H E L I X ChatGPT Subscription",
+        "User-Agent": "Xayven ChatGPT Subscription",
     }
     if access_token:
         headers["Authorization"] = f"Bearer {access_token}"
@@ -313,3 +313,4 @@ def build_responses_input(messages: list[dict]) -> list[dict]:
         input_type = "output_text" if role == "assistant" else "input_text"
         input_items.append({"role": role, "content": [{"type": input_type, "text": text}]})
     return input_items
+

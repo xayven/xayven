@@ -57,7 +57,7 @@ from routes.email_pollers import _start_poller
 
 logger = logging.getLogger(__name__)
 
-HELIX_MAIL_ORIGIN = "helix-ui"
+XAYVEN_MAIL_ORIGIN = "xayven-ui"
 
 
 def _email_tag_owner_aliases(account_id: str | None, owner: str = "") -> list[str]:
@@ -317,12 +317,12 @@ def _move_email_message(conn, uid: str, dest: str, role: str = "") -> bool:
     return False
 
 
-def _apply_helix_headers(msg, kind: str | None = None, ref_id: str | None = None):
-    msg["X-H E L I X-Origin"] = HELIX_MAIL_ORIGIN
+def _apply_xayven_headers(msg, kind: str | None = None, ref_id: str | None = None):
+    msg["X-Xayven-Origin"] = XAYVEN_MAIL_ORIGIN
     if kind:
-        msg["X-H E L I X-Kind"] = re.sub(r"[^A-Za-z0-9_.-]", "-", kind)[:64]
+        msg["X-Xayven-Kind"] = re.sub(r"[^A-Za-z0-9_.-]", "-", kind)[:64]
     if ref_id:
-        msg["X-H E L I X-Ref"] = re.sub(r"[^A-Za-z0-9_.:-]", "-", ref_id)[:128]
+        msg["X-Xayven-Ref"] = re.sub(r"[^A-Za-z0-9_.:-]", "-", ref_id)[:128]
 
 
 def _envelope_recipients(*fields: str) -> list:
@@ -642,12 +642,12 @@ def setup_email_routes():
                 # All emails NOT marked as answered/done (read or unread).
                 status, data = _imap_uid_search(conn, f"(UNANSWERED{from_clause})")
             elif filter_ == "reminders":
-                # Prefer the H E L I X marker header, but include the subject
-                # fallback too. The fallback uses a distinct H E L I X prefix
+                # Prefer the Xayven marker header, but include the subject
+                # fallback too. The fallback uses a distinct Xayven prefix
                 # so ordinary emails containing "Reminder" don't get mixed in.
                 status, data = _imap_uid_search(
                     conn,
-                    f'(OR HEADER X-H E L I X-Kind "reminder" SUBJECT "Reminder (H E L I X):"{from_clause})',
+                    f'(OR HEADER X-Xayven-Kind "reminder" SUBJECT "Reminder (Xayven):"{from_clause})',
                 )
             elif filter_ == "pending_30d":
                 # "What's pending in the last month" — UNANSWERED + delivered
@@ -1750,13 +1750,13 @@ def setup_email_routes():
             logger.error(f"Failed to permanently delete email {uid}: {e}")
             return {"success": False, "error": "Mail operation failed"}
 
-    @router.delete("/helix/reminders")
-    async def delete_helix_reminder_emails(
+    @router.delete("/xayven/reminders")
+    async def delete_xayven_reminder_emails(
         account_id: str | None = Query(None),
         permanent: bool = Query(False),
         owner: str = Depends(require_owner),
     ):
-        """Delete email messages stamped as H E L I X reminders."""
+        """Delete email messages stamped as Xayven reminders."""
         if account_id:
             _assert_owns_account(account_id, owner)
         deleted = 0
@@ -1794,12 +1794,12 @@ def setup_email_routes():
                         # Match the Reminders filter: new messages have the
                         # explicit kind header, and subject fallback catches
                         # clients/providers that stripped custom headers.
-                        uids.update(_search_uids(conn, f'(HEADER X-H E L I X-Kind {_search_quote("reminder")})'))
-                        uids.update(_search_uids(conn, f'(SUBJECT {_search_quote("Reminder (H E L I X):")})'))
+                        uids.update(_search_uids(conn, f'(HEADER X-Xayven-Kind {_search_quote("reminder")})'))
+                        uids.update(_search_uids(conn, f'(SUBJECT {_search_quote("Reminder (Xayven):")})'))
                         for addr in own_addrs:
                             addr_q = _search_quote(addr)
-                            uids.update(_search_uids(conn, f'(FROM {addr_q} SUBJECT {_search_quote("Reminder (H E L I X):")})'))
-                            # Legacy reminders created before the H E L I X
+                            uids.update(_search_uids(conn, f'(FROM {addr_q} SUBJECT {_search_quote("Reminder (Xayven):")})'))
+                            # Legacy reminders created before the Xayven
                             # prefix still came from this mailbox as
                             # "Reminder: ..."; include them in Clear without
                             # sweeping unrelated external reminder emails.
@@ -1822,7 +1822,7 @@ def setup_email_routes():
             _invalidate_list_cache(account_id)
             return {"success": True, "deleted": deleted, "folders_checked": folders_checked}
         except Exception as e:
-            logger.error(f"delete_helix_reminder_emails failed: {e}")
+            logger.error(f"delete_xayven_reminder_emails failed: {e}")
             return {"success": False, "error": "Mail operation failed"}
 
     @router.post("/move/{uid}")
@@ -1922,7 +1922,7 @@ def setup_email_routes():
 
     async def _send_email_sync(
         to, cc, bcc, subject, body, in_reply_to, references, attachments,
-        account_id=None, owner="", helix_kind=None, helix_ref=None,
+        account_id=None, owner="", xayven_kind=None, xayven_ref=None,
     ):
         """Shared send logic used by both /send and scheduled delivery.
 
@@ -1946,7 +1946,7 @@ def setup_email_routes():
             outer["Cc"] = cc
         outer["Subject"] = subject or ""
         outer["Date"] = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S +0000")
-        _apply_helix_headers(outer, helix_kind or "scheduled", helix_ref)
+        _apply_xayven_headers(outer, xayven_kind or "scheduled", xayven_ref)
         if in_reply_to:
             outer["In-Reply-To"] = in_reply_to
         if references:
@@ -2005,7 +2005,7 @@ def setup_email_routes():
             conn = sqlite3.connect(SCHEDULED_DB)
             conn.execute("""
                 INSERT INTO scheduled_emails
-                (id, to_addr, cc, bcc, subject, body, in_reply_to, references_hdr, attachments, send_at, created_at, status, account_id, helix_kind, owner)
+                (id, to_addr, cc, bcc, subject, body, in_reply_to, references_hdr, attachments, send_at, created_at, status, account_id, xayven_kind, owner)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?)
             """, (
                 sid,
@@ -2020,7 +2020,7 @@ def setup_email_routes():
                 send_at,
                 datetime.utcnow().isoformat(),
                 req.get("account_id") or None,
-                req.get("helix_kind") or "scheduled",
+                req.get("xayven_kind") or "scheduled",
                 owner or "",
             ))
             conn.commit()
@@ -2149,14 +2149,14 @@ def setup_email_routes():
             outer["Cc"] = req.cc
         outer["Subject"] = req.subject
         outer["Date"] = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S +0000")
-        outer["Message-ID"] = email.utils.make_msgid(domain="helix.local")
+        outer["Message-ID"] = email.utils.make_msgid(domain="xayven.local")
 
         if req.in_reply_to:
             outer["In-Reply-To"] = req.in_reply_to
         if req.references:
             outer["References"] = req.references
-        if req.helix_kind:
-            _apply_helix_headers(outer, req.helix_kind)
+        if req.xayven_kind:
+            _apply_xayven_headers(outer, req.xayven_kind)
 
         # Plain + HTML body. Escape user content so a `<script>` or
         # `<img onerror=...>` paste in compose doesn't end up as live HTML
@@ -3215,3 +3215,4 @@ def setup_email_routes():
             db.close()
 
     return router
+

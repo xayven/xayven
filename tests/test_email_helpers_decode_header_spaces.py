@@ -15,7 +15,7 @@ import os
 import tempfile
 from pathlib import Path
 
-_tmp_data = Path(tempfile.mkdtemp(prefix="helix_decode_hdr_spaces_"))
+_tmp_data = Path(tempfile.mkdtemp(prefix="xayven_decode_hdr_spaces_"))
 os.environ.setdefault("DATA_DIR", str(_tmp_data))
 os.environ.setdefault("DATABASE_URL", f"sqlite:///{_tmp_data / 'app.db'}")
 
@@ -40,3 +40,4 @@ def test_adjacent_encoded_words_join_without_space():
 
 def test_plain_ascii_header_unchanged():
     assert _decode_header("Weekly report") == "Weekly report"
+

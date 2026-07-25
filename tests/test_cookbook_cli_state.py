@@ -6,7 +6,7 @@ from tests.helpers.cli_loader import load_script
 
 
 def test_state_set_rejects_non_object_json(tmp_path, monkeypatch, capsys):
-    cli = load_script("helix-cookbook")
+    cli = load_script("xayven-cookbook")
     cli._STATE_PATH = tmp_path / "cookbook_state.json"
     monkeypatch.setattr(cli.sys, "stdin", io.StringIO("[]"))
 
@@ -15,3 +15,4 @@ def test_state_set_rejects_non_object_json(tmp_path, monkeypatch, capsys):
 
     assert "expected a JSON object" in capsys.readouterr().err
     assert not cli._STATE_PATH.exists()
+

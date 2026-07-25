@@ -37,7 +37,7 @@ DEFAULT_FILE_EXTENSIONS: Set[str] = {
 VECTOR_WEIGHT = 0.7
 KEYWORD_WEIGHT = 0.3
 
-COLLECTION_NAME = "helix_rag"
+COLLECTION_NAME = "xayven_rag"
 
 
 def _generate_doc_id(text: str, owner: str = "") -> str:
@@ -605,3 +605,4 @@ class VectorRAG:
 
     def retrieve(self, query: str, k: int = 5) -> List[str]:
         return [r['document'] for r in self.search(query, k)]
+

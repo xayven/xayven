@@ -4,7 +4,7 @@
 // their .value stays the source of truth, and we dispatch 'input'
 // events so existing listeners keep working.
 
-const LS_RECENT = 'helix-recent-colors';
+const LS_RECENT = 'xayven-recent-colors';
 const MAX_RECENT = 12;
 
 let _popover = null;
@@ -451,3 +451,4 @@ export function initColorPickers(root = document) {
 export function refreshColorPickers(root = document) {
   initColorPickers(root);
 }
+

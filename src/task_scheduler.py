@@ -1573,9 +1573,9 @@ class TaskScheduler:
             msg["From"] = from_addr
             msg["To"] = to_addr
             msg["Subject"] = f"[Task] {task.name}"
-            msg["X-H E L I X-Origin"] = "helix-ui"
-            msg["X-H E L I X-Kind"] = "task"
-            msg["X-H E L I X-Ref"] = str(task.id)
+            msg["X-Xayven-Origin"] = "xayven-ui"
+            msg["X-Xayven-Kind"] = "task"
+            msg["X-Xayven-Ref"] = str(task.id)
             msg.set_content(result or "")
             _send_smtp_message(cfg, from_addr, [to_addr], msg.as_string(), timeout=30)
             logger.info("Task %s emailed result to %s (%sb)", task.id, to_addr, len(result or ""))
@@ -1899,9 +1899,9 @@ class TaskScheduler:
             "subject": f"[Task] {task.name}",
             "body": result,
             "headers": {
-                "X-H E L I X-Origin": "helix-ui",
-                "X-H E L I X-Kind": "task",
-                "X-H E L I X-Ref": str(task.id),
+                "X-Xayven-Origin": "xayven-ui",
+                "X-Xayven-Kind": "task",
+                "X-Xayven-Ref": str(task.id),
             },
         }
         if recipient:
@@ -2328,3 +2328,4 @@ class TaskScheduler:
                 pass
         finally:
             db.close()
+

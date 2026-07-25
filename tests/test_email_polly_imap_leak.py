@@ -48,7 +48,7 @@ from unittest.mock import MagicMock
 # which doesn't exist on bare CI machines, and our test would fail
 # with `OperationalError: unable to open database file` long before
 # the leak regression had a chance to fire.
-_TMP_DATA = Path(tempfile.mkdtemp(prefix="helix-email-polly-leak-"))
+_TMP_DATA = Path(tempfile.mkdtemp(prefix="xayven-email-polly-leak-"))
 os.environ.setdefault("DATA_DIR", str(_TMP_DATA))
 os.environ.setdefault("DATABASE_URL", f"sqlite:///{_TMP_DATA / 'app.db'}")
 
@@ -110,3 +110,4 @@ async def test_auto_summarize_pass_logs_out_imap_on_select_failure(monkeypatch):
         f"On simulated failure, the function should return an 'Error: ...' "
         f"string (matches the outer except at line 921). Got: {result!r}"
     )
+

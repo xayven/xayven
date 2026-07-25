@@ -8,7 +8,7 @@ import core.constants as cc
 
 
 def _base(monkeypatch, **env):
-    for k in ("HELIX_INTERNAL_BASE", "APP_PORT"):
+    for k in ("XAYVEN_INTERNAL_BASE", "APP_PORT"):
         monkeypatch.delenv(k, raising=False)
     for k, v in env.items():
         monkeypatch.setenv(k, v)
@@ -26,7 +26,7 @@ def test_app_port_is_honored(monkeypatch):
 def test_explicit_override_wins_and_is_stripped(monkeypatch):
     # Override beats APP_PORT and trailing slash is trimmed.
     assert _base(monkeypatch, APP_PORT="7860",
-                 HELIX_INTERNAL_BASE="https://proxy.example/") == "https://proxy.example"
+                 XAYVEN_INTERNAL_BASE="https://proxy.example/") == "https://proxy.example"
 
 
 def test_uses_127_not_localhost(monkeypatch):
@@ -50,3 +50,4 @@ def test_no_hardcoded_loopback_left_in_call_sites():
             if stripped.startswith("#"):
                 continue
             assert "localhost:7777" not in ln, f"{rel}: hardcoded loopback URL: {ln.strip()}"
+

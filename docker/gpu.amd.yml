@@ -6,14 +6,15 @@
 # running Docker must be in the `video` and `render` groups.
 #
 # This overlay only passes the host GPU through to the container.
-# The slim H E L I X image does not bundle ROCm userspace or inference
+# The slim Xayven image does not bundle ROCm userspace or inference
 # engines — install ROCm-compatible builds of vLLM / llama-cpp-python
 # via Cookbook -> Dependencies (or pip) before serving GPU models.
 services:
-  helix:
+  xayven:
     devices:
       - /dev/kfd
       - /dev/dri
     group_add:
       - video
       - ${RENDER_GID:-render}
+

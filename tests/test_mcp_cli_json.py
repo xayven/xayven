@@ -4,7 +4,7 @@ from tests.helpers.db_stubs import make_core_db_stub
 
 def test_mcp_json_helpers_reject_wrong_shapes(monkeypatch):
     make_core_db_stub(monkeypatch, models=["McpServer"])
-    cli = load_script("helix-mcp")
+    cli = load_script("xayven-mcp")
 
     assert cli._json_list('["a"]') == ["a"]
     assert cli._json_list('{"not":"list"}') == []
@@ -12,3 +12,4 @@ def test_mcp_json_helpers_reject_wrong_shapes(monkeypatch):
     assert cli._json_dict('{"A":"B"}') == {"A": "B"}
     assert cli._json_dict('["bad"]') == {}
     assert cli._json_dict("{bad") == {}
+
